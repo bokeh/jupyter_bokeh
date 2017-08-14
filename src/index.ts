@@ -6,16 +6,13 @@ import {
   Widget
 } from '@phosphor/widgets';
 
-import {
-  Message
-} from '@phosphor/messaging'
 
 /**
  * The MIME type for BokehJS.
  */
-export
 const BOKEHJS_LOAD_MIME_TYPE = 'application/vnd.bokehjs_load.v0';
 const BOKEHJS_EXEC_MIME_TYPE = 'application/vnd.bokehjs_exec.v0';
+
 
 /**
  * Load BokehJS into dom
@@ -28,19 +25,20 @@ class BokehJSLoad extends Widget implements IRenderMime.IRenderer {
    */
   constructor(options: IRenderMime.IRendererOptions) {
     super();
-    this._mimetype = options.mimeType;
+    this._script_element = document.createElement("script")
   }
 
   renderModel(model: IRenderMime.IMimeModel): Promise<void> {
-    let payload = model.data[this._mimetype] as string
-    const load_func = new Function(payload)
-    load_func()
+    this._script_element.textContent = model.data[this._load_mimetype] as string | ""
+    this.node.appendChild(this._script_element)
 
     return Promise.resolve()
   }
 
-  private _mimetype: string;
+  private _load_mimetype: string = BOKEHJS_LOAD_MIME_TYPE;
+  private _script_element: HTMLScriptElement;
 }
+
 
 /**
  * Exec BokehJS into window
@@ -53,29 +51,26 @@ class BokehJSExec extends Widget implements IRenderMime.IRenderer {
    */
   constructor(options: IRenderMime.IRendererOptions) {
     super();
-    this._mimetype = options.mimeType;
-    this.div = document.createElement('div');
+    this._script_element = document.createElement("script")
+    this._div_element = document.createElement("div")
   }
 
   renderModel(model: IRenderMime.IMimeModel): Promise<void> {
     // this loads a div and script that renders the bokeh document and replaces the div
-    const payload = model.data[this._mimetype] as {script: string, div: string}
-    this.div.innerHTML = payload["div"]
-    this.node.appendChild(this.div)
-    this.script = new Function(payload["script"])
+    const payload = model.data[this._exec_mimetype] as {script: string, div: string} | {"script": "", "div": ""}
+    this._script_element.textContent = payload["script"]
+    this._div_element.innerHTML = payload["div"]
+    this.node.appendChild(this._script_element)
+    this.node.appendChild(this._div_element)
 
     return Promise.resolve()
   }
 
-  onAfterAttach(msg: Message): void {
-    this.script()
-  }
-
-
-  private _mimetype: string;
-  div: any;
-  script: Function;
+  private _exec_mimetype: string = BOKEHJS_EXEC_MIME_TYPE;
+  private _script_element: HTMLScriptElement;
+  private _div_element: HTMLDivElement;
 }
+
 
 /**
  * A mime renderer factory for Bokeh
