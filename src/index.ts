@@ -1,10 +1,10 @@
 import {
   IRenderMime
-} from '@jupyterlab/rendermime-interfaces';
+} from '@jupyterlab/rendermime-interfaces'
 
 import {
   Widget
-} from '@phosphor/widgets';
+} from '@phosphor/widgets'
 
 import {
   ReadonlyJSONObject
@@ -13,8 +13,8 @@ import {
 /**
  * The MIME type for BokehJS.
  */
-const BOKEHJS_LOAD_MIME_TYPE = 'application/vnd.bokehjs_load.v0+json';
-const BOKEHJS_EXEC_MIME_TYPE = 'application/vnd.bokehjs_exec.v0+json';
+const BOKEHJS_LOAD_MIME_TYPE = 'application/vnd.bokehjs_load.v0+json'
+const BOKEHJS_EXEC_MIME_TYPE = 'application/vnd.bokehjs_exec.v0+json'
 
 /**
  * Load BokehJS into dom
@@ -26,7 +26,7 @@ class BokehJSLoad extends Widget implements IRenderMime.IRenderer {
    * Create a new widget
    */
   constructor(options: IRenderMime.IRendererOptions) {
-    super();
+    super()
     this._script_element = document.createElement("script")
     this._div_element = document.createElement("div")
   }
@@ -43,9 +43,9 @@ class BokehJSLoad extends Widget implements IRenderMime.IRenderer {
     return Promise.resolve()
   }
 
-  private _load_mimetype: string = BOKEHJS_LOAD_MIME_TYPE;
-  private _script_element: HTMLScriptElement;
-  private _div_element: HTMLDivElement;
+  private _load_mimetype: string = BOKEHJS_LOAD_MIME_TYPE
+  private _script_element: HTMLScriptElement
+  private _div_element: HTMLDivElement
 }
 
 
@@ -59,7 +59,7 @@ class BokehJSExec extends Widget implements IRenderMime.IRenderer {
    * Create a new widget
    */
   constructor(options: IRenderMime.IRendererOptions) {
-    super();
+    super()
     this._script_element = document.createElement("script")
     this._div_element = document.createElement("div")
   }
@@ -74,11 +74,11 @@ class BokehJSExec extends Widget implements IRenderMime.IRenderer {
       this._script_element.textContent = data.script as string | ""
     } else if (metadata.server_id !== undefined) {
       // I'm a server document
-      const ss = document.createElement('div');
+      const ss = document.createElement('div')
       ss.innerHTML = data.div as string | ""
       const script_attrs : NamedNodeMap = ss.children[0].attributes
-      for (let key in script_attrs) {
-        this._script_element.setAttribute(script_attrs[key].name, script_attrs[key].value)
+      for (let i in script_attrs) {
+        this._script_element.setAttribute(script_attrs[i].name, script_attrs[i].value)
       }
     }
 
@@ -88,9 +88,9 @@ class BokehJSExec extends Widget implements IRenderMime.IRenderer {
     return Promise.resolve()
   }
 
-  private _exec_mimetype: string = BOKEHJS_EXEC_MIME_TYPE;
-  private _script_element: HTMLScriptElement;
-  private _div_element: HTMLDivElement;
+  private _exec_mimetype: string = BOKEHJS_EXEC_MIME_TYPE
+  private _script_element: HTMLScriptElement
+  private _div_element: HTMLDivElement
 }
 
 
@@ -117,7 +117,7 @@ const extensions: IRenderMime.IExtension[] = [
     name: 'bokeh_load',
     rendererFactory: loadRendererFactory,
     rank: 0,
-    dataType: 'string'
+    dataType: 'json' // {"script": script, "div": div}
   },
   {
     name: 'bokeh_exec',
@@ -127,4 +127,4 @@ const extensions: IRenderMime.IExtension[] = [
   }
 ]
 
-export default extensions;
+export default extensions
