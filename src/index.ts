@@ -28,16 +28,13 @@ class BokehJSLoad extends Widget implements IRenderMime.IRenderer {
   constructor(options: IRenderMime.IRendererOptions) {
     super()
     this._script_element = document.createElement("script")
-    this._div_element = document.createElement("div")
   }
 
   renderModel(model: IRenderMime.IMimeModel): Promise<void> {
     let data = model.data[this._load_mimetype] as ReadonlyJSONObject
 
-    this._div_element.innerHTML = data.div as string | ""
     this._script_element.textContent = data.script as string | ""
 
-    this.node.appendChild(this._div_element)
     this.node.appendChild(this._script_element)
 
     return Promise.resolve()
@@ -45,7 +42,6 @@ class BokehJSLoad extends Widget implements IRenderMime.IRenderer {
 
   private _load_mimetype: string = BOKEHJS_LOAD_MIME_TYPE
   private _script_element: HTMLScriptElement
-  private _div_element: HTMLDivElement
 }
 
 
