@@ -1,7 +1,6 @@
 # jupyterlab_bokeh
 
-Bokeh integration for JupyterLab
-
+A JupyterLab extension for rendering Bokeh content
 
 ## Prerequisites
 
@@ -28,4 +27,3 @@ To rebuild the package and the JupyterLab app:
 npm run build
 jupyter lab build
 ```
-
