@@ -13,6 +13,8 @@ import {
 /**
  * The MIME type for BokehJS.
  */
+const HTML_MIME_TYPE = 'text/html'
+const JS_MIME_TYPE = 'application/javascript'
 const BOKEHJS_LOAD_MIME_TYPE = 'application/vnd.bokehjs_load.v0+json'
 const BOKEHJS_EXEC_MIME_TYPE = 'application/vnd.bokehjs_exec.v0+json'
 
@@ -31,9 +33,9 @@ class BokehJSLoad extends Widget implements IRenderMime.IRenderer {
   }
 
   renderModel(model: IRenderMime.IMimeModel): Promise<void> {
-    let data = model.data[this._load_mimetype] as ReadonlyJSONObject
+    let data = model.data[this._load_mimetype] as string
 
-    this._script_element.textContent = data.script as string | ""
+    this._script_element.textContent = data
 
     this.node.appendChild(this._script_element)
 
@@ -57,36 +59,38 @@ class BokehJSExec extends Widget implements IRenderMime.IRenderer {
   constructor(options: IRenderMime.IRendererOptions) {
     super()
     this._script_element = document.createElement("script")
-    this._div_element = document.createElement("div")
   }
 
   renderModel(model: IRenderMime.IMimeModel): Promise<void> {
-    let data = model.data[this._exec_mimetype] as ReadonlyJSONObject
+
     let metadata = model.metadata[this._exec_mimetype] as ReadonlyJSONObject
 
     if (metadata.id !== undefined) {
       // I'm a static document
-      this._div_element.innerHTML = data.div as string | ""
-      this._script_element.textContent = data.script as string | ""
+      let data = model.data[this._js_mimetype] as string
+      this._script_element.textContent = data
     } else if (metadata.server_id !== undefined) {
       // I'm a server document
-      const ss = document.createElement('div')
-      ss.innerHTML = data.div as string | ""
-      const script_attrs : NamedNodeMap = ss.children[0].attributes
+      let data = model.data[this._html_mimetype] as string
+      const d = document.createElement('div')
+      d.innerHTML = data
+      const script_attrs : NamedNodeMap = d.children[0].attributes
       for (let i in script_attrs) {
         this._script_element.setAttribute(script_attrs[i].name, script_attrs[i].value)
       }
     }
 
-    this.node.appendChild(this._div_element)
     this.node.appendChild(this._script_element)
 
     return Promise.resolve()
   }
 
+  // for classic nb compat reasons, the payload one of these mime messages
+  private _html_mimetype: string = HTML_MIME_TYPE
+  private _js_mimetype: string = JS_MIME_TYPE
+  // the metadata is stored here
   private _exec_mimetype: string = BOKEHJS_EXEC_MIME_TYPE
   private _script_element: HTMLScriptElement
-  private _div_element: HTMLDivElement
 }
 
 
