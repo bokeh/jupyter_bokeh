@@ -114,13 +114,13 @@ const execRendererFactory: IRenderMime.IRendererFactory = {
 
 const extensions: IRenderMime.IExtension[] = [
   {
-    name: 'bokeh_load',
+    id: 'jupyterlab_bokeh:load',
     rendererFactory: loadRendererFactory,
     rank: 0,
     dataType: 'json' // {"script": script, "div": div}
   },
   {
-    name: 'bokeh_exec',
+    id: 'jupyterlab_bokeh:exec',
     rendererFactory: execRendererFactory,
     rank: 0,
     dataType: 'json' // {"script": script, "div": div}
