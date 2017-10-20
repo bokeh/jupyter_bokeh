@@ -1,6 +1,6 @@
 {
   "name": "jupyterlab_bokeh",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "A JupyterLab extension for rendering Bokeh content",
   "author": "Luke Canavan <lcanavan@anaconda.org>",
   "main": "lib/index.js",
