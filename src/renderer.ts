@@ -35,9 +35,19 @@ class BokehJSLoad extends Widget implements IRenderMime.IRenderer {
   private _load_mimetype: string = BOKEHJS_LOAD_MIME_TYPE
   private _script_element: HTMLScriptElement
 
-  constructor(options: IRenderMime.IRendererOptions) {
+  constructor(options: IRenderMime.IRendererOptions, manager: ContextManager) {
     super()
     this._script_element = document.createElement("script")
+
+    const kernel: any = manager.context.session.kernel;
+    if (!kernel) { return }
+    kernel.statusChanged.connect((kernel: string, status: string) => {
+      for (const key in (window as any).Bokeh.kernels) {
+        if ((status == "restarting") && ((window as any).Bokeh.kernels[key] == kernel)) {
+          delete (window as any).Bokeh.kernels[key];
+        }
+      }
+    });
   }
 
   renderModel(model: IRenderMime.IMimeModel): Promise<void> {
@@ -81,6 +91,8 @@ class BokehJSExec extends Widget implements IRenderMime.IRenderer {
       // I'm a static document
       let data = model.data[this._js_mimetype] as string
       this._script_element.textContent = data
+      const kernel = this._manager.context.session.kernel;
+      (window as any).Bokeh.embed.kernels[String(metadata.id)] = kernel;
     } else if (metadata.server_id !== undefined) {
       // I'm a server document
       this._server_id = metadata.server_id as string
