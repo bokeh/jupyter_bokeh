@@ -41,7 +41,7 @@ class NBWidgetExtension implements INBWidgetExtension {
     nb.rendermime.addFactory({
         safe: false,
         mimeTypes: [BOKEHJS_LOAD_MIME_TYPE],
-        createRenderer: (options) => new BokehJSLoad(options, manager)
+        createRenderer: (options) => new BokehJSLoad(options)
     }, 0);
 
     nb.rendermime.addFactory({

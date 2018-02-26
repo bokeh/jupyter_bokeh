@@ -3,10 +3,6 @@ import {
 } from '@jupyterlab/rendermime-interfaces'
 
 import {
-  KernelMessage
-} from '@jupyterlab/services'
-
-import {
   ReadonlyJSONObject
 } from '@phosphor/coreutils'
 
@@ -35,19 +31,9 @@ class BokehJSLoad extends Widget implements IRenderMime.IRenderer {
   private _load_mimetype: string = BOKEHJS_LOAD_MIME_TYPE
   private _script_element: HTMLScriptElement
 
-  constructor(options: IRenderMime.IRendererOptions, manager: ContextManager) {
+  constructor(options: IRenderMime.IRendererOptions) {
     super()
     this._script_element = document.createElement("script")
-
-    const kernel: any = manager.context.session.kernel;
-    if (!kernel) { return }
-    kernel.statusChanged.connect((kernel: string, status: string) => {
-      for (const key in (window as any).Bokeh.kernels) {
-        if ((status == "restarting") && ((window as any).Bokeh.kernels[key] == kernel)) {
-          delete (window as any).Bokeh.kernels[key];
-        }
-      }
-    });
   }
 
   renderModel(model: IRenderMime.IMimeModel): Promise<void> {
@@ -71,7 +57,6 @@ class BokehJSExec extends Widget implements IRenderMime.IRenderer {
   // the metadata is stored here
   private _exec_mimetype: string = BOKEHJS_EXEC_MIME_TYPE
   private _script_element: HTMLScriptElement
-  private _server_id: string
   private _manager: ContextManager;
 
   constructor(options: IRenderMime.IRendererOptions, manager: ContextManager) {
@@ -91,11 +76,9 @@ class BokehJSExec extends Widget implements IRenderMime.IRenderer {
       // I'm a static document
       let data = model.data[this._js_mimetype] as string
       this._script_element.textContent = data
-      const kernel = this._manager.context.session.kernel;
-      (window as any).Bokeh.embed.kernels[String(metadata.id)] = kernel;
+      this._manager.documentId = metadata.id as string
     } else if (metadata.server_id !== undefined) {
       // I'm a server document
-      this._server_id = metadata.server_id as string
       let data = model.data[this._html_mimetype] as string
       const d = document.createElement('div')
       d.innerHTML = data
@@ -103,6 +86,7 @@ class BokehJSExec extends Widget implements IRenderMime.IRenderer {
       for (let i in script_attrs) {
         this._script_element.setAttribute(script_attrs[i].name, script_attrs[i].value)
       }
+      this._manager.serverId = metadata.server_id as string
     }
 
     this.node.appendChild(this._script_element)
@@ -114,10 +98,6 @@ class BokehJSExec extends Widget implements IRenderMime.IRenderer {
     if (this.isDisposed) {
       return;
     }
-    let content: KernelMessage.IExecuteRequest = {
-      code: `import bokeh.io.notebook as ion; ion.destroy_server('${this._server_id}')`
-    }
-    this._manager.context.session.kernel.requestExecute(content, true)
-    this._manager, this._server_id = null, null;
+    this._manager = null;
   }
 }
