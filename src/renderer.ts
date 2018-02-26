@@ -39,7 +39,7 @@ class BokehJSLoad extends Widget implements IRenderMime.IRenderer {
   private _load_mimetype: string = BOKEHJS_LOAD_MIME_TYPE
   private _script_element: HTMLScriptElement
 
-  constructor(options: IRenderMime.IRendererOptions, manager: ContextManager) {
+  constructor(options: IRenderMime.IRendererOptions) {
     super()
     this._script_element = document.createElement("script")
   }
@@ -86,16 +86,16 @@ class BokehJSExec extends Widget implements IRenderMime.IRenderer {
       // I'm a static document
       let data = model.data[this._js_mimetype] as string
       this._script_element.textContent = data
-	  if ((window as any).Bokeh.embed.kernels !== undefined) {
+      if ((window as any).Bokeh.embed.kernels !== undefined) {
         const kernel = this._manager.context.session.kernel;
         (window as any).Bokeh.embed.kernels[String(metadata.id)] = kernel;
-		this._document_id = String(metadata.id);
+        this._document_id = String(metadata.id);
         this._manager.context.session.statusChanged.connect((session: IClientSession, status: string) => {
           if (status == "restarting") {
               delete (window as any).Bokeh.embed.kernels[String(metadata.id)];
           }
-		});
-	  }
+        });
+      }
     } else if (metadata.server_id !== undefined) {
       // I'm a server document
       this._server_id = metadata.server_id as string
@@ -117,18 +117,18 @@ class BokehJSExec extends Widget implements IRenderMime.IRenderer {
     if (this.isDisposed) {
       return;
     }
-	if (this._server_id) {
+    if (this._server_id) {
       let content: KernelMessage.IExecuteRequest = {
         code: `import bokeh.io.notebook as ion; ion.destroy_server('${this._server_id}')`
       }
       this._manager.context.session.kernel.requestExecute(content, true)
-	  this._server_id = null
-	} else if (this._document_id) {
-	  if ((window as any).Bokeh.embed.kernels !== undefined) {
+      this._server_id = null
+    } else if (this._document_id) {
+      if ((window as any).Bokeh.embed.kernels !== undefined) {
         delete (window as any).Bokeh.embed.kernels[this._document_id];
       }
       this._document_id = null;
-	}
+    }
     this._manager = null;
   }
 }
