@@ -98,6 +98,7 @@ class BokehJSExec extends Widget implements IRenderMime.IRenderer {
     if (this.isDisposed) {
       return;
     }
+    this._manager.clearManager()
     this._manager = null;
   }
 }

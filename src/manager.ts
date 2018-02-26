@@ -60,18 +60,20 @@ class ContextManager implements IDisposable {
     if (this.isDisposed) {
       return;
     }
+    this.clearManager()
+    this._context = null
+  }
 
-    if (!this._documentId) {
+  clearManager() {
+    if (this._documentId) {
       delete (window as any).Bokeh.embed.kernels[this._documentId]
       this._documentId = null
-    } else if (!this._serverId) {
+    } else if (this._serverId) {
       let content: KernelMessage.IExecuteRequest = {
         code: `import bokeh.io.notebook as ion; ion.destroy_server('${this._serverId}')`
       }
       this._context.session.kernel.requestExecute(content, true)
       this._serverId = null
     }
-
-    this._context = null
   }
 }
