@@ -3,10 +3,6 @@ import {
 } from '@jupyterlab/rendermime-interfaces'
 
 import {
-  KernelMessage
-} from '@jupyterlab/services'
-
-import {
   ReadonlyJSONObject
 } from '@phosphor/coreutils'
 
@@ -61,7 +57,6 @@ class BokehJSExec extends Widget implements IRenderMime.IRenderer {
   // the metadata is stored here
   private _exec_mimetype: string = BOKEHJS_EXEC_MIME_TYPE
   private _script_element: HTMLScriptElement
-  private _server_id: string
   private _manager: ContextManager;
 
   constructor(options: IRenderMime.IRendererOptions, manager: ContextManager) {
@@ -81,9 +76,9 @@ class BokehJSExec extends Widget implements IRenderMime.IRenderer {
       // I'm a static document
       let data = model.data[this._js_mimetype] as string
       this._script_element.textContent = data
+      this._manager.documentId = metadata.id as string
     } else if (metadata.server_id !== undefined) {
       // I'm a server document
-      this._server_id = metadata.server_id as string
       let data = model.data[this._html_mimetype] as string
       const d = document.createElement('div')
       d.innerHTML = data
@@ -91,6 +86,7 @@ class BokehJSExec extends Widget implements IRenderMime.IRenderer {
       for (let i in script_attrs) {
         this._script_element.setAttribute(script_attrs[i].name, script_attrs[i].value)
       }
+      this._manager.serverId = metadata.server_id as string
     }
 
     this.node.appendChild(this._script_element)
@@ -102,10 +98,7 @@ class BokehJSExec extends Widget implements IRenderMime.IRenderer {
     if (this.isDisposed) {
       return;
     }
-    let content: KernelMessage.IExecuteRequest = {
-      code: `import bokeh.io.notebook as ion; ion.destroy_server('${this._server_id}')`
-    }
-    this._manager.context.session.kernel.requestExecute(content, true)
-    this._manager, this._server_id = null, null;
+    this._manager.clearManager()
+    this._manager = null;
   }
 }
