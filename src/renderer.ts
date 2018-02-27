@@ -3,7 +3,8 @@ import {
 } from '@jupyterlab/rendermime-interfaces'
 
 import {
-  KernelMessage
+  KernelMessage,
+  Kernel
 } from '@jupyterlab/services'
 
 import {
@@ -59,15 +60,15 @@ class BokehJSLoad extends Widget implements IRenderMime.IRenderer {
  */
 export
 class BokehJSExec extends Widget implements IRenderMime.IRenderer {
+  private _manager: ContextManager;
   // for classic nb compat reasons, the payload in contained in these mime messages
   private _html_mimetype: string = HTML_MIME_TYPE
   private _js_mimetype: string = JS_MIME_TYPE
   // the metadata is stored here
-  private _document_id: string
   private _exec_mimetype: string = BOKEHJS_EXEC_MIME_TYPE
   private _script_element: HTMLScriptElement
   private _server_id: string
-  private _manager: ContextManager;
+  private _document_id: string
 
   constructor(options: IRenderMime.IRendererOptions, manager: ContextManager) {
     super()
@@ -84,26 +85,26 @@ class BokehJSExec extends Widget implements IRenderMime.IRenderer {
 
     if (metadata.id !== undefined) {
       // I'm a static document
-      let data = model.data[this._js_mimetype] as string
+      const data = model.data[this._js_mimetype] as string
       this._script_element.textContent = data
       if ((window as any).Bokeh.embed.kernels !== undefined) {
+        this._document_id = metadata.id as string;
         const kernel = this._manager.context.session.kernel;
-        (window as any).Bokeh.embed.kernels[String(metadata.id)] = kernel;
-        this._document_id = String(metadata.id);
-        this._manager.context.session.statusChanged.connect((session: IClientSession, status: string) => {
-          if (status == "restarting") {
-              delete (window as any).Bokeh.embed.kernels[String(metadata.id)];
+        (window as any).Bokeh.embed.kernels[this._document_id] = kernel;
+        this._manager.context.session.statusChanged.connect((session: IClientSession, status: Kernel.Status) => {
+          if (status == "restarting" || status === "dead") {
+              delete (window as any).Bokeh.embed.kernels[this._document_id];
           }
-        });
+        }, this);
       }
     } else if (metadata.server_id !== undefined) {
       // I'm a server document
       this._server_id = metadata.server_id as string
-      let data = model.data[this._html_mimetype] as string
+      const data = model.data[this._html_mimetype] as string
       const d = document.createElement('div')
       d.innerHTML = data
       const script_attrs: NamedNodeMap = d.children[0].attributes
-      for (let i in script_attrs) {
+      for (const i in script_attrs) {
         this._script_element.setAttribute(script_attrs[i].name, script_attrs[i].value)
       }
     }
@@ -118,7 +119,7 @@ class BokehJSExec extends Widget implements IRenderMime.IRenderer {
       return;
     }
     if (this._server_id) {
-      let content: KernelMessage.IExecuteRequest = {
+      const content: KernelMessage.IExecuteRequest = {
         code: `import bokeh.io.notebook as ion; ion.destroy_server('${this._server_id}')`
       }
       this._manager.context.session.kernel.requestExecute(content, true)
