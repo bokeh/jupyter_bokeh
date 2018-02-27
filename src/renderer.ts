@@ -16,12 +16,22 @@ import {
 } from '@phosphor/coreutils'
 
 import {
+  IDisposable
+} from '@phosphor/disposable';
+
+import {
   Widget
 } from '@phosphor/widgets'
 
 import {
   ContextManager
 } from './manager';
+
+
+export declare interface KernelProxy {
+  // copied from https://github.com/jupyterlab/jupyterlab/blob/master/packages/services/src/kernel/default.ts#L605
+  registerCommTarget(targetName: string, callback: (comm: Kernel.IComm, msg: KernelMessage.ICommOpenMsg) => void): IDisposable,
+}
 
 
 /**
@@ -89,8 +99,13 @@ class BokehJSExec extends Widget implements IRenderMime.IRenderer {
       this._script_element.textContent = data
       if ((window as any).Bokeh.embed.kernels !== undefined) {
         this._document_id = metadata.id as string;
-        const kernel = this._manager.context.session.kernel;
-        (window as any).Bokeh.embed.kernels[this._document_id] = kernel;
+        const registerClosure = (targetName: string, callback: (comm: Kernel.IComm, msg: KernelMessage.ICommOpenMsg) => void): IDisposable => {
+          return this._manager.context.session.kernel.registerCommTarget(targetName, callback)
+        }
+        const kernel_proxy: KernelProxy = {
+          registerCommTarget: registerClosure
+        };
+        (window as any).Bokeh.embed.kernels[this._document_id] = kernel_proxy;
         this._manager.context.session.statusChanged.connect((session: IClientSession, status: Kernel.Status) => {
           if (status == "restarting" || status === "dead") {
               delete (window as any).Bokeh.embed.kernels[this._document_id];
