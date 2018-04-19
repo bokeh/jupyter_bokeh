@@ -28,11 +28,13 @@
   },
   "dependencies": {
     "@jupyterlab/application": "^0.15.0",
+    "@jupyterlab/apputils": "^0.15.4",
     "@jupyterlab/docregistry": "^0.15.0",
     "@jupyterlab/notebook": "^0.15.0",
     "@jupyterlab/rendermime-interfaces": "^1.0.1",
     "@jupyterlab/services": "^1.0.1",
     "@phosphor/coreutils": "^1.3.0",
+    "@phosphor/disposable": "^1.1.2",
     "@phosphor/widgets": "^1.5.0"
   },
   "devDependencies": {
