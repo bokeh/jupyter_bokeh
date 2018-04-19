@@ -97,7 +97,7 @@ class BokehJSExec extends Widget implements IRenderMime.IRenderer {
       // I'm a static document
       const data = model.data[this._js_mimetype] as string
       this._script_element.textContent = data
-      if ((window as any).Bokeh.embed.kernels !== undefined) {
+      if ((window as any).Bokeh !== undefined && (window as any).Bokeh.embed.kernels !== undefined) {
         this._document_id = metadata.id as string;
         const registerClosure = (targetName: string, callback: (comm: Kernel.IComm, msg: KernelMessage.ICommOpenMsg) => void): IDisposable => {
           return this._manager.context.session.kernel.registerCommTarget(targetName, callback)
