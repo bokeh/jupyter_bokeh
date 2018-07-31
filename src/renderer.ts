@@ -16,10 +16,6 @@ import {
 } from '@phosphor/coreutils'
 
 import {
-  IDisposable
-} from '@phosphor/disposable';
-
-import {
   Widget
 } from '@phosphor/widgets'
 
@@ -30,7 +26,7 @@ import {
 
 export declare interface KernelProxy {
   // copied from https://github.com/jupyterlab/jupyterlab/blob/master/packages/services/src/kernel/default.ts#L605
-  registerCommTarget(targetName: string, callback: (comm: Kernel.IComm, msg: KernelMessage.ICommOpenMsg) => void): IDisposable,
+  registerCommTarget(targetName: string, callback: (comm: Kernel.IComm, msg: KernelMessage.ICommOpenMsg) => void): void,
 }
 
 
@@ -99,8 +95,8 @@ class BokehJSExec extends Widget implements IRenderMime.IRenderer {
       this._script_element.textContent = data
       if ((window as any).Bokeh !== undefined && (window as any).Bokeh.embed.kernels !== undefined) {
         this._document_id = metadata.id as string;
-        const registerClosure = (targetName: string, callback: (comm: Kernel.IComm, msg: KernelMessage.ICommOpenMsg) => void): IDisposable => {
-          return this._manager.context.session.kernel.registerCommTarget(targetName, callback)
+        const registerClosure = (targetName: string, callback: (comm: Kernel.IComm, msg: KernelMessage.ICommOpenMsg) => void): void => {
+          this._manager.context.session.kernel.registerCommTarget(targetName, callback)
         }
         const kernel_proxy: KernelProxy = {
           registerCommTarget: registerClosure
