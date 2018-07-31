@@ -44,11 +44,13 @@ class NBWidgetExtension implements INBWidgetExtension {
         createRenderer: (options) => new BokehJSLoad(options)
     }, 0);
 
+    // the rank has to be -1, so that the priority is higher than the
+    // default javascript mime extension (rank=0)
     nb.rendermime.addFactory({
         safe: false,
         mimeTypes: [BOKEHJS_EXEC_MIME_TYPE],
         createRenderer: (options) => new BokehJSExec(options, manager)
-    }, 0);
+    }, -1);
 
     return new DisposableDelegate(() => {
         if (nb.rendermime) {

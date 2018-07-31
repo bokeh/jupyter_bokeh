@@ -15,7 +15,8 @@
   "scripts": {
     "build": "tsc",
     "clean": "rimraf lib",
-    "prepack": "npm run clean && npm run build"
+    "prepack": "npm run clean && npm run build",
+    "watch": "tsc -w --listEmittedFiles"
   },
   "files": [
     "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}"
