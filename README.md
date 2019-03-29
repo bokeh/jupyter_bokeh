@@ -1,5 +1,7 @@
 # jupyterlab_bokeh
 
+[![Build Status](https://travis-ci.org/bokeh/jupyterlab_bokeh.svg?branch=master)](https://travis-ci.org/bokeh/jupyterlab_bokeh) [![Version](https://img.shields.io/npm/v/jupyterlab_bokeh.svg)](https://www.npmjs.com/package/jupyterlab_bokeh) [![Downloads](https://img.shields.io/npm/dm/jupyterlab_bokeh.svg)](https://www.npmjs.com/package/jupyterlab_bokeh) [![Dependencies](https://img.shields.io/librariesio/release/npm/jupyterlab_bokeh.svg)](https://libraries.io/npm/jupyterlab_bokeh)
+
 A JupyterLab extension for rendering Bokeh content
 
 ## Prerequisites
