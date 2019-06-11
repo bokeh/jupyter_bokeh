@@ -8,7 +8,7 @@ import {
 } from '@jupyterlab/services'
 
 import {
-    IClientSession
+  IClientSession
 } from '@jupyterlab/apputils';
 
 import {
@@ -42,7 +42,7 @@ export const BOKEHJS_EXEC_MIME_TYPE = 'application/vnd.bokehjs_exec.v0+json'
  * Load BokehJS and CSS into the DOM
  */
 export
-class BokehJSLoad extends Widget implements IRenderMime.IRenderer {
+  class BokehJSLoad extends Widget implements IRenderMime.IRenderer {
   private _load_mimetype: string = BOKEHJS_LOAD_MIME_TYPE
   private _script_element: HTMLScriptElement
 
@@ -65,7 +65,7 @@ class BokehJSLoad extends Widget implements IRenderMime.IRenderer {
  * Exec BokehJS in window
  */
 export
-class BokehJSExec extends Widget implements IRenderMime.IRenderer {
+  class BokehJSExec extends Widget implements IRenderMime.IRenderer {
   private _manager: ContextManager;
   // for classic nb compat reasons, the payload in contained in these mime messages
   private _html_mimetype: string = HTML_MIME_TYPE
@@ -104,7 +104,7 @@ class BokehJSExec extends Widget implements IRenderMime.IRenderer {
         (window as any).Bokeh.embed.kernels[this._document_id] = kernel_proxy;
         this._manager.context.session.statusChanged.connect((session: IClientSession, status: Kernel.Status) => {
           if (status == "restarting" || status === "dead") {
-              delete (window as any).Bokeh.embed.kernels[this._document_id];
+            delete (window as any).Bokeh.embed.kernels[this._document_id];
           }
         }, this);
       }
@@ -130,7 +130,7 @@ class BokehJSExec extends Widget implements IRenderMime.IRenderer {
       return;
     }
     if (this._server_id) {
-      const content: KernelMessage.IExecuteRequest = {
+      const content: KernelMessage.IExecuteRequestMsg = {
         code: `import bokeh.io.notebook as ion; ion.destroy_server('${this._server_id}')`
       }
       this._manager.context.session.kernel.requestExecute(content, true)
