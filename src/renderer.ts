@@ -130,7 +130,7 @@ export
       return;
     }
     if (this._server_id) {
-      const content: KernelMessage.IExecuteRequestMsg = {
+      const content: KernelMessage.IExecuteRequest = {
         code: `import bokeh.io.notebook as ion; ion.destroy_server('${this._server_id}')`
       }
       this._manager.context.session.kernel.requestExecute(content, true)
