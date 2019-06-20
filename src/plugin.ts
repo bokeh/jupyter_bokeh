@@ -38,7 +38,7 @@ export
   createNew(nb: NotebookPanel, context: DocumentRegistry.IContext<INotebookModel>): IDisposable {
     let manager = new ContextManager(context);
 
-    nb.rendermime.addFactory({
+    nb.content.rendermime.addFactory({
       safe: false,
       mimeTypes: [BOKEHJS_LOAD_MIME_TYPE],
       createRenderer: (options) => new BokehJSLoad(options)
@@ -46,15 +46,15 @@ export
 
     // the rank has to be -1, so that the priority is higher than the
     // default javascript mime extension (rank=0)
-    nb.rendermime.addFactory({
+    nb.content.rendermime.addFactory({
       safe: false,
       mimeTypes: [BOKEHJS_EXEC_MIME_TYPE],
       createRenderer: (options) => new BokehJSExec(options, manager)
     }, -1);
 
     return new DisposableDelegate(() => {
-      if (nb.rendermime) {
-        nb.rendermime.removeMimeType(BOKEHJS_EXEC_MIME_TYPE);
+      if (nb.content.rendermime) {
+        nb.content.rendermime.removeMimeType(BOKEHJS_EXEC_MIME_TYPE);
       }
       manager.dispose();
     });
