@@ -1,4 +1,4 @@
-# based on recipe in 
+# based on recipe in
 # https://github.com/jupyterlab/extension-cookiecutter-ts/blob/master/.travis.yml
 language: python
 sudo: false
@@ -16,7 +16,7 @@ before_install:
 - export DISPLAY=:99.0
 - sh -e /etc/init.d/xvfb start || true
 install:
-- wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+- wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
 - bash miniconda.sh -b -p $HOME/miniconda
 - export PATH="$HOME/miniconda/bin:$PATH"
 - hash -r
@@ -29,6 +29,7 @@ install:
 script:
 - npm install
 - npm run build
+- npm run lint
 - jupyter labextension install .
 - jupyter lab clean
 - jupyter labextension link .
