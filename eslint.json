@@ -33,6 +33,7 @@
       "named": "never",
       "asyncArrow": "always"
     }],
-    "space-in-parens": ["error", "never"]
+    "space-in-parens": ["error", "never"],
+    "prefer-const": "error"
   }
 }

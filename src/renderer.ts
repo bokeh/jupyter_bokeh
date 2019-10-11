@@ -33,7 +33,7 @@ export class BokehJSLoad extends Widget implements IRenderMime.IRenderer {
   }
 
   renderModel(model: IRenderMime.IMimeModel): Promise<void> {
-    let data = model.data[this._load_mimetype] as string
+    const data = model.data[this._load_mimetype] as string
     this._script_element.textContent = data
     this.node.appendChild(this._script_element)
 
@@ -66,7 +66,7 @@ export class BokehJSExec extends Widget implements IRenderMime.IRenderer {
   }
 
   renderModel(model: IRenderMime.IMimeModel): Promise<void> {
-    let metadata = model.metadata[this._exec_mimetype] as ReadonlyJSONObject
+    const metadata = model.metadata[this._exec_mimetype] as ReadonlyJSONObject
 
     if (metadata.id !== undefined) {
       // I"m a static document

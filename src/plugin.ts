@@ -14,7 +14,7 @@ export type INBWidgetExtension = DocumentRegistry.IWidgetExtension<NotebookPanel
 
 export class NBWidgetExtension implements INBWidgetExtension {
   createNew(nb: NotebookPanel, context: DocumentRegistry.IContext<INotebookModel>): IDisposable {
-    let manager = new ContextManager(context)
+    const manager = new ContextManager(context)
 
     nb.content.rendermime.addFactory({
       safe: false,
