@@ -1,5 +1,3 @@
-import {
-  extension
-} from './plugin';
+import {extension} from "./plugin"
 
-export default extension;
+export default extension
