@@ -14,6 +14,7 @@
   "license": "BSD-3-Clause",
   "scripts": {
     "build": "tsc",
+    "lint": "eslint -c eslint.json src/**/*.ts",
     "clean": "rimraf lib",
     "prepack": "npm run clean && npm run build",
     "watch": "tsc -w --listEmittedFiles"
@@ -41,6 +42,9 @@
   },
   "devDependencies": {
     "rimraf": "^2.6.1",
-    "typescript": "^3.5.1"
+    "typescript": "^3.5.1",
+    "eslint": "^6.5.1",
+    "@typescript-eslint/eslint-plugin": "^2.3.3",
+    "@typescript-eslint/parser": "^2.3.3"
   }
 }
