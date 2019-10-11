@@ -1,6 +1,5 @@
 import {IRenderMime} from "@jupyterlab/rendermime-interfaces"
 import {KernelMessage, Kernel} from "@jupyterlab/services"
-import {IClientSession} from "@jupyterlab/apputils"
 import {ReadonlyJSONObject} from "@phosphor/coreutils"
 import {Widget} from "@phosphor/widgets"
 import {ContextManager} from "./manager"
@@ -27,7 +26,7 @@ export class BokehJSLoad extends Widget implements IRenderMime.IRenderer {
   private _load_mimetype: string = BOKEHJS_LOAD_MIME_TYPE
   private _script_element: HTMLScriptElement
 
-  constructor(options: IRenderMime.IRendererOptions) {
+  constructor(_options: IRenderMime.IRendererOptions) {
     super()
     this._script_element = document.createElement("script")
   }
@@ -45,24 +44,24 @@ export class BokehJSLoad extends Widget implements IRenderMime.IRenderer {
  * Exec BokehJS in window
  */
 export class BokehJSExec extends Widget implements IRenderMime.IRenderer {
-  private _manager: ContextManager
+  private _manager: ContextManager | null
   // for classic nb compat reasons, the payload in contained in these mime messages
   private _html_mimetype: string = HTML_MIME_TYPE
   private _js_mimetype: string = JS_MIME_TYPE
   // the metadata is stored here
   private _exec_mimetype: string = BOKEHJS_EXEC_MIME_TYPE
   private _script_element: HTMLScriptElement
-  private _server_id: string
-  private _document_id: string
+  private _server_id: string | null
+  private _document_id: string | null
 
-  constructor(options: IRenderMime.IRendererOptions, manager: ContextManager) {
+  constructor(_options: IRenderMime.IRendererOptions, manager: ContextManager) {
     super()
     this._script_element = document.createElement("script")
     this._manager = manager
   }
 
   get isDisposed(): boolean {
-    return this._manager === null
+    return this._manager == null
   }
 
   renderModel(model: IRenderMime.IMimeModel): Promise<void> {
@@ -74,15 +73,18 @@ export class BokehJSExec extends Widget implements IRenderMime.IRenderer {
       this._script_element.textContent = data
       if (Bokeh !== undefined && Bokeh.embed.kernels !== undefined) {
         this._document_id = metadata.id as string
+        const {_manager} = this
         const kernel_proxy: KernelProxy = {
           registerCommTarget(targetName, callback) {
-            this._manager.context.session.kernel.registerCommTarget(targetName, callback)
+            const {kernel} = _manager!.context.session
+            if (kernel != null)
+              kernel.registerCommTarget(targetName, callback)
           },
         }
         Bokeh.embed.kernels[this._document_id] = kernel_proxy
-        this._manager.context.session.statusChanged.connect((session: IClientSession, status: Kernel.Status) => {
+        _manager!.context.session.statusChanged.connect((_session, status) => {
           if (status == "restarting" || status === "dead") {
-            delete Bokeh.embed.kernels[this._document_id]
+            delete Bokeh.embed.kernels[this._document_id!]
           }
         }, this)
       }
@@ -104,18 +106,20 @@ export class BokehJSExec extends Widget implements IRenderMime.IRenderer {
   }
 
   dispose(): void {
-    if (this.isDisposed) {
+    if (this.isDisposed)
       return
-    }
+
     if (this._server_id) {
       const content: KernelMessage.IExecuteRequestMsg["content"] = {
         code: `import bokeh.io.notebook as ion; ion.destroy_server("${this._server_id}")`,
       }
-      this._manager.context.session.kernel.requestExecute(content, true)
+      const {kernel} = this._manager!.context.session
+      if (kernel != null)
+        kernel.requestExecute(content, true)
       this._server_id = null
     } else if (this._document_id) {
-      if ((window as any).Bokeh.embed.kernels !== undefined) {
-        delete (window as any).Bokeh.embed.kernels[this._document_id]
+      if (Bokeh.embed.kernels !== undefined) {
+        delete Bokeh.embed.kernels[this._document_id]
       }
       this._document_id = null
     }
