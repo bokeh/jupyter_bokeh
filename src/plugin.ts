@@ -1,6 +1,7 @@
 import {DocumentRegistry} from "@jupyterlab/docregistry"
 import {INotebookModel, NotebookPanel} from "@jupyterlab/notebook"
 import {JupyterFrontEndPlugin, JupyterFrontEnd} from "@jupyterlab/application"
+import {IJupyterWidgetRegistry} from "@jupyter-widgets/base"
 import {IDisposable, DisposableDelegate} from "@phosphor/disposable"
 
 import {ContextManager} from "./manager"
@@ -39,11 +40,23 @@ export class NBWidgetExtension implements INBWidgetExtension {
   }
 }
 
+import {BokehModel, BokehView} from "./widgets"
+
 export const extension: JupyterFrontEndPlugin<void> = {
   id: "jupyterlab_bokeh",
-  autoStart: true,
-  activate: (app: JupyterFrontEnd) => {
+  requires: [IJupyterWidgetRegistry],
+  activate: (app: JupyterFrontEnd, widgets: IJupyterWidgetRegistry) => {
     // this adds the Bokeh widget extension onto Notebooks specifically
     app.docRegistry.addWidgetExtension("Notebook", new NBWidgetExtension())
+
+    widgets.registerWidget({
+      name: "jupyterlab_bokeh",
+      version: "1.0.0",
+      exports: {
+        BokehModel: BokehModel as any,
+        BokehView: BokehView as any,
+      },
+    })
   },
+  autoStart: true,
 }
