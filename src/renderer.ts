@@ -68,7 +68,7 @@ export class BokehJSExec extends Widget implements IRenderMime.IRenderer {
     const metadata = model.metadata[this._exec_mimetype] as ReadonlyJSONObject
 
     if (metadata.id !== undefined) {
-      // I"m a static document
+      // I'm a static document
       const data = model.data[this._js_mimetype] as string
       this._script_element.textContent = data
       if (Bokeh !== undefined && Bokeh.embed.kernels !== undefined) {
@@ -89,7 +89,7 @@ export class BokehJSExec extends Widget implements IRenderMime.IRenderer {
         }, this)
       }
     } else if (metadata.server_id !== undefined) {
-      // I"m a server document
+      // I'm a server document
       this._server_id = metadata.server_id as string
       const data = model.data[this._html_mimetype] as string
       const d = document.createElement("div")
