@@ -58,9 +58,13 @@ class BokehModel(DOMWidget):
 
     render_bundle = Dict().tag(sync=True, to_json=lambda obj, _: serialize_json(obj))
 
-    def __init__(self, model, document=None, **kwargs):
-        if isinstance(model, LayoutDOM):
-            self.update_from_model(model, document)
+    @property
+    def _document(self):
+        return self._model.document
+
+    def __init__(self, model, **kwargs):
+        assert isinstance(model, LayoutDOM)
+        self.update_from_model(model)
         super(BokehModel, self).__init__(**kwargs)
         self.on_msg(self._sync_model)
 
@@ -69,8 +73,8 @@ class BokehModel(DOMWidget):
             self._document.remove_on_change(self)
 
     @classmethod
-    def _model_to_traits(cls, model, document=None):
-        if document is None:
+    def _model_to_traits(cls, model):
+        if model.document is None:
             document = Document()
             document.add_root(model)
         (docs_json, [render_item]) = standalone_docs_json_and_render_items([model], True)
@@ -79,11 +83,11 @@ class BokehModel(DOMWidget):
             render_items=[render_item.to_json()],
             div=div_for_render_item(render_item),
         )
-        return render_bundle, document
+        return render_bundle
 
-    def update_from_model(self, model, document=None):
+    def update_from_model(self, model):
         self._model = model
-        self.render_bundle, self._document = self._model_to_traits(model, document)
+        self.render_bundle = self._model_to_traits(model)
         self._document.on_change_dispatch_to(self)
 
     def _document_patched(self, event):
