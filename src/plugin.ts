@@ -1,72 +1,49 @@
-import {
-  DocumentRegistry
-} from '@jupyterlab/docregistry'
+import {DocumentRegistry} from "@jupyterlab/docregistry"
+import {INotebookModel, NotebookPanel} from "@jupyterlab/notebook"
+import {JupyterFrontEndPlugin, JupyterFrontEnd} from "@jupyterlab/application"
+import {IDisposable, DisposableDelegate} from "@phosphor/disposable"
 
-import {
-  INotebookModel,
-  NotebookPanel
-} from '@jupyterlab/notebook'
-
-import {
-  JupyterFrontEndPlugin,
-  JupyterFrontEnd
-} from '@jupyterlab/application'
-
-import {
-  IDisposable,
-  DisposableDelegate
-} from '@phosphor/disposable'
-
-import {
-  ContextManager
-} from './manager'
-
+import {ContextManager} from "./manager"
 import {
   BokehJSExec,
   BokehJSLoad,
   BOKEHJS_EXEC_MIME_TYPE,
-  BOKEHJS_LOAD_MIME_TYPE
-} from './renderer'
+  BOKEHJS_LOAD_MIME_TYPE} from "./renderer"
 
+export type INBWidgetExtension = DocumentRegistry.IWidgetExtension<NotebookPanel, INotebookModel>
 
-export
-  type INBWidgetExtension = DocumentRegistry.IWidgetExtension<NotebookPanel, INotebookModel>;
-
-
-export
-  class NBWidgetExtension implements INBWidgetExtension {
+export class NBWidgetExtension implements INBWidgetExtension {
   createNew(nb: NotebookPanel, context: DocumentRegistry.IContext<INotebookModel>): IDisposable {
-    let manager = new ContextManager(context);
+    const manager = new ContextManager(context)
 
     nb.content.rendermime.addFactory({
       safe: false,
       mimeTypes: [BOKEHJS_LOAD_MIME_TYPE],
-      createRenderer: (options) => new BokehJSLoad(options)
-    }, 0);
+      createRenderer: (options) => new BokehJSLoad(options),
+    }, 0)
 
     // the rank has to be -1, so that the priority is higher than the
     // default javascript mime extension (rank=0)
     nb.content.rendermime.addFactory({
       safe: false,
       mimeTypes: [BOKEHJS_EXEC_MIME_TYPE],
-      createRenderer: (options) => new BokehJSExec(options, manager)
-    }, -1);
+      createRenderer: (options) => new BokehJSExec(options, manager),
+    }, -1)
 
     return new DisposableDelegate(() => {
       if (nb.content.rendermime) {
-        nb.content.rendermime.removeMimeType(BOKEHJS_EXEC_MIME_TYPE);
+        nb.content.rendermime.removeMimeType(BOKEHJS_EXEC_MIME_TYPE)
       }
-      manager.dispose();
-    });
+      manager.dispose()
+    })
   }
 }
 
-export
-  const extension: JupyterFrontEndPlugin<void> = {
-    id: 'jupyterlab_bokeh',
-    autoStart: true,
-    activate: (app: JupyterFrontEnd) => {
-      // this adds the Bokeh widget extension onto Notebooks specifically
-      app.docRegistry.addWidgetExtension('Notebook', new NBWidgetExtension());
-    }
-  }
+export const extension: JupyterFrontEndPlugin<void> = {
+  id: "jupyterlab_bokeh",
+  autoStart: true,
+  activate: (app: JupyterFrontEnd) => {
+    // this adds the Bokeh widget extension onto Notebooks specifically
+    app.docRegistry.addWidgetExtension("Notebook", new NBWidgetExtension())
+  },
+}
