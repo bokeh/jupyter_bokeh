@@ -13,7 +13,7 @@
   ],
   "license": "BSD-3-Clause",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && webpack -p",
     "lint": "eslint -c eslint.json src/**/*.ts",
     "clean": "rimraf lib",
     "prepack": "npm run clean && npm run build",
@@ -43,6 +43,8 @@
   },
   "devDependencies": {
     "rimraf": "^2.6.1",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.9",
     "typescript": "^3.6.3",
     "eslint": "^6.5.1",
     "@typescript-eslint/eslint-plugin": "^2.3.3",
