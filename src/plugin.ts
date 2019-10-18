@@ -51,7 +51,7 @@ export const extension: JupyterFrontEndPlugin<void> = {
 
     widgets.registerWidget({
       name: "jupyterlab_bokeh",
-      version: "1.1.0dev1",
+      version: "1.1.0-dev.1",
       exports: {
         BokehModel: BokehModel as any,
         BokehView: BokehView as any,

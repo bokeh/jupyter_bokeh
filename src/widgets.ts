@@ -18,7 +18,7 @@ type Fragment = any
 const {keys, values} = Object as any
 
 const module_name = "jupyterlab_bokeh"
-const module_version = "^1.1.0dev1"
+const module_version = "^1.1.0-dev.1"
 
 export type RenderBundle = {
   docs_json: DocsJson
