@@ -18,7 +18,7 @@ type Fragment = any
 const {keys, values} = Object as any
 
 const module_name = "jupyterlab_bokeh"
-const module_version = "^1.0.0"
+const module_version = "^1.1.0dev1"
 
 export type RenderBundle = {
   docs_json: DocsJson
@@ -30,12 +30,15 @@ export class BokehModel extends DOMWidgetModel {
   defaults() {
     return {
       ...super.defaults(),
+
       _model_name: "BokehModel",
       _model_module: module_name,
       _model_module_version: module_version,
+
       _view_name: "BokehView",
       _view_module: module_name,
       _view_module_version: module_version,
+
       render_bundle: {},
     }
   }

@@ -1,9 +1,8 @@
 {
   "name": "jupyterlab_bokeh",
-  "version": "1.0.0",
-  "description": "A JupyterLab extension for rendering Bokeh content",
-  "author": "Luke Canavan <lcanavan@anaconda.org>",
-  "main": "lib/index.js",
+  "version": "1.1.0dev1",
+  "description": "A Jupyter extension for rendering Bokeh content.",
+  "author": "Bokeh Team <info@bokeh.org>",
   "keywords": [
     "jupyter",
     "jupyterlab",
@@ -15,16 +14,14 @@
   "scripts": {
     "build": "tsc && webpack -p",
     "lint": "eslint -c eslint.json src/**/*.ts",
-    "clean": "rimraf lib",
+    "clean": "rimraf dist lib",
     "prepack": "npm run clean && npm run build",
     "watch": "tsc -w --listEmittedFiles"
   },
+  "main": "lib/index.js",
   "files": [
-    "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}"
+    "{dist,lib}/**/*.{js,js.map,d.ts}"
   ],
-  "jupyterlab": {
-    "extension": true
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/bokeh/jupyterlab_bokeh.git"
@@ -49,5 +46,8 @@
     "eslint": "^6.5.1",
     "@typescript-eslint/eslint-plugin": "^2.3.3",
     "@typescript-eslint/parser": "^2.3.3"
+  },
+  "jupyterlab": {
+    "extension": true
   }
 }

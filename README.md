@@ -1,6 +1,6 @@
 # jupyterlab_bokeh
 
-A JupyterLab extension for rendering Bokeh content
+A JupyterLab extension for rendering Bokeh content.
 
 ## Prerequisites
 

@@ -17,8 +17,9 @@ module.exports = [
       path: path.resolve(__dirname, "jupyterlab_bokeh", "nbextension", "static"),
       libraryTarget: "amd"
     },
-    devtool: "source-map",
     externals,
+    devtool: "source-map",
+    performance: {hints: false},
   },
 
   /**
@@ -40,7 +41,8 @@ module.exports = [
       library: "jupyterlab_bokeh",
       publicPath: "https://unpkg.com/jupyterlab_bokeh@" + version + "/dist/"
     },
-    devtool: "source-map",
     externals,
+    devtool: "source-map",
+    performance: {hints: false},
   },
 ]

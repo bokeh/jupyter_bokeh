@@ -19,6 +19,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import json
 
 # External imports
+from ipywidgets import DOMWidget
+from traitlets import Unicode, Dict
 
 # Bokeh imports
 from bokeh.core.json_encoder import serialize_json
@@ -38,10 +40,7 @@ __all__ = (
 )
 
 _module_name = "jupyterlab_bokeh"
-_module_version = "1.0.0"
-
-from ipywidgets import DOMWidget
-from traitlets import Unicode, Dict
+_module_version = "1.1.0dev1"
 
 #-----------------------------------------------------------------------------
 # General API
@@ -52,6 +51,7 @@ class BokehModel(DOMWidget):
     _model_name = Unicode("BokehModel").tag(sync=True)
     _model_module = Unicode(_module_name).tag(sync=True)
     _model_module_version = Unicode(_module_version).tag(sync=True)
+
     _view_name = Unicode("BokehView").tag(sync=True)
     _view_module = Unicode(_module_name).tag(sync=True)
     _view_module_version = Unicode(_module_version).tag(sync=True)

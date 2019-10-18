@@ -1,0 +1,67 @@
+#!/usr/bin/env python
+
+import sys
+from setuptools import setup, find_packages, Command
+
+class BuildJS(Command):
+
+    description = "runs 'npm install && npm pack'"
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        npm = "npm" if sys.platform != "win32" else "npm.bat"
+        self.spawn([npm, "install"])
+        self.spawn([npm, "pack"])
+
+install_requires = [
+    "bokeh >=1.3.4",
+    "ipywidgets >=7.0.0",
+]
+
+setup_args = dict(
+    name="jupyterlab_bokeh",
+    version="1.1.0dev1",
+    install_requires=install_requires,
+    description="A Jupyter extension for rendering Bokeh content.",
+    long_description=open("README.md").read(),
+    long_description_content_type="text/markdown",
+    author="Bokeh Team",
+    author_email="info@bokeh.org",
+    license="BSD-3-Clause",
+    url="https://github.com/bokeh/jupyterlab_bokeh",
+    packages=find_packages(),
+    classifiers=[
+        "License :: OSI Approved :: BSD License",
+        "Development Status :: 5 - Production/Stable",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Operating System :: OS Independent",
+        "Intended Audience :: Science/Research",
+        "Intended Audience :: Developers",
+        "Natural Language :: English",
+        "Topic :: Scientific/Engineering",
+        "Topic :: Software Development :: Libraries",
+    ],
+    cmdclass={"build_js": BuildJS},
+    include_package_data=True,
+    data_files=[
+        ("share/jupyter/nbextensions/jupyterlab_bokeh", [
+            "jupyterlab_bokeh/nbextension/static/extension.js",
+            "jupyterlab_bokeh/nbextension/static/index.js",
+            "jupyterlab_bokeh/nbextension/static/index.js.map",
+        ]),
+        ("etc/jupyter/nbconfig/notebook.d", [
+            "jupyterlab_bokeh.json",
+        ]),
+    ],
+)
+
+if __name__ == "__main__":
+    setup(**setup_args)
