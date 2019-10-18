@@ -96,9 +96,9 @@ class BokehModel(DOMWidget):
         self.send({"msg": "patch", "payload": msg.header_json})
         self.send({"msg": "patch", "payload": msg.metadata_json})
         self.send({"msg": "patch", "payload": msg.content_json})
-        for header, buff in msg.buffers:
+        for header, buffer in msg.buffers:
             self.send({"msg": "patch", "payload": json.dumps(header)})
-            self.send({"msg": "patch", "payload": buff})
+            self.send({"msg": "patch"}, [buffer])
 
     def _sync_model(self, _, content, _buffers):
         if content.get("event", "") != "jsevent":

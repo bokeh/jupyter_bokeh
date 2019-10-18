@@ -57,7 +57,7 @@ export class BokehView extends DOMWidgetView {
     const {Receiver} = bk_require("protocol/receiver")
     this._receiver = new Receiver()
     this.model.on("change:render_bundle", () => this.render())
-    this.listenTo(this.model, "msg:custom", (msg) => this._consume_patch(msg))
+    this.listenTo(this.model, "msg:custom", (content, buffers) => this._consume_patch(content, buffers))
   }
 
   render(): void {
@@ -84,11 +84,12 @@ export class BokehView extends DOMWidgetView {
       this.send({event: "jsevent", id: event.model.id, new: event.new_, attr: event.attr, old: event.old})
   }
 
-  protected _consume_patch(content: {msg: "patch", payload: Fragment}): void {
+  protected _consume_patch(content: {msg: "patch", payload?: Fragment}, buffers: DataView[]): void {
     if (this._document == null)
       return
     if (content.msg == "patch") {
-      this._receiver.consume(content.payload)
+      const {payload} = content
+      this._receiver.consume(payload != null ? payload : buffers[0].buffer)
       const comm_msg = this._receiver.message
       if (comm_msg != null && keys(comm_msg.content).length > 0) {
         this._blocked = true
