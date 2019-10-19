@@ -14,7 +14,7 @@ module.exports = [
     entry: "./lib/extension.js",
     output: {
       filename: "index.js",
-      path: path.resolve(__dirname, "jupyterlab_bokeh", "nbextension", "static"),
+      path: path.resolve(__dirname, "jupyter_bokeh", "nbextension", "static"),
       libraryTarget: "amd"
     },
     externals,
@@ -38,8 +38,8 @@ module.exports = [
       filename: "index.js",
       path: path.resolve(__dirname, "dist"),
       libraryTarget: "amd",
-      library: "jupyterlab_bokeh",
-      publicPath: "https://unpkg.com/jupyterlab_bokeh@" + version + "/dist/"
+      library: "@bokeh/jupyter_bokeh",
+      publicPath: "https://unpkg.com/@bokeh/jupyter_bokeh@" + version + "/dist/"
     },
     externals,
     devtool: "source-map",

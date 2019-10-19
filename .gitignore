@@ -3,5 +3,5 @@
 /node_modules/
 /build/
 /*.egg-info/
-/jupyterlab_bokeh*.tgz
+/*.tgz
 .ipynb_checkpoints/

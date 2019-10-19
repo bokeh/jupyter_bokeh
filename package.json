@@ -1,5 +1,5 @@
 {
-  "name": "jupyterlab_bokeh",
+  "name": "@bokeh/jupyter_bokeh",
   "version": "1.1.0-dev.1",
   "description": "A Jupyter extension for rendering Bokeh content.",
   "author": "Bokeh Team <info@bokeh.org>",

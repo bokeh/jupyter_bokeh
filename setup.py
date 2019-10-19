@@ -25,7 +25,7 @@ install_requires = [
 ]
 
 setup_args = dict(
-    name="jupyterlab_bokeh",
+    name="jupyter_bokeh",
     version="1.1.0dev1",
     install_requires=install_requires,
     description="A Jupyter extension for rendering Bokeh content.",
@@ -52,13 +52,13 @@ setup_args = dict(
     cmdclass={"build_js": BuildJS},
     include_package_data=True,
     data_files=[
-        ("share/jupyter/nbextensions/jupyterlab_bokeh", [
-            "jupyterlab_bokeh/nbextension/static/extension.js",
-            "jupyterlab_bokeh/nbextension/static/index.js",
-            "jupyterlab_bokeh/nbextension/static/index.js.map",
+        ("share/jupyter/nbextensions/jupyter_bokeh", [
+            "jupyter_bokeh/nbextension/static/extension.js",
+            "jupyter_bokeh/nbextension/static/index.js",
+            "jupyter_bokeh/nbextension/static/index.js.map",
         ]),
         ("etc/jupyter/nbconfig/notebook.d", [
-            "jupyterlab_bokeh.json",
+            "jupyter_bokeh.json",
         ]),
     ],
 )

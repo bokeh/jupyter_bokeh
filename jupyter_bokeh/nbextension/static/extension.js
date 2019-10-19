@@ -4,7 +4,7 @@ define(function() {
     window['requirejs'].config({
         map: {
             '*': {
-                'jupyterlab_bokeh': 'nbextensions/jupyterlab_bokeh/index',
+                '@bokeh/jupyter_bokeh': 'nbextensions/jupyter_bokeh/index',
             },
         }
     });

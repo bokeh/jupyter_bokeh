@@ -1,4 +1,4 @@
 include README.md
 include LICENSE.txt
-include jupyterlab_bokeh.json
-recursive-include jupyterlab_bokeh/nbextension/static *.js *.js.map *.d.ts
+include jupyter_bokeh.json
+recursive-include jupyter_bokeh/nbextension/static *.js *.js.map *.d.ts

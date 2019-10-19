@@ -1,40 +1,53 @@
-# jupyterlab_bokeh
+# jupyter_bokeh
 
-A JupyterLab extension for rendering Bokeh content.
+A Jupyter extension for rendering Bokeh content.
 
 ## Prerequisites
 
-* JupyterLab
+* Jupyter Lab or Notebook
 
 ## Installation
 
-To install the latest version:
+To install the latest version in Jupyter Lab:
 
 ```bash
-jupyter labextension install jupyterlab_bokeh
+const install -c bokeh jupyter_bokeh
+jupyter labextension install @jupyter-widgets/jupyterlab-manager
+jupyter labextension install @bokeh/jupyter_bokeh
 ```
 
 To install a specific version:
 
 ```bash
-jupyter labextension install jupyterlab_bokeh@x.y.x
+jupyter labextension install @bokeh/jupyter_bokeh@x.y.x
+```
+
+On slow or limited memory systems, one can use `--minimize=False` to reduce compilation
+times or make Jupyter Lab build runtime bundles at all.
+
+jupyter_bokeh is automatically installed in Jupyter Notebook. In case of a non-standard
+setup, one can install the extensions with:
+
+```bash
+jupyter nbextension install --sys-prefix --symlink --py jupyter_bokeh
+jupyter nbextension enable jupyter_bokeh --py --sys-prefix
 ```
 
 ## Compatibility
 
 The core [Bokeh](https://github.com/bokeh/bokeh) library is generally version independent of
-[JupyterLab](https://github.com/jupyterlab/jupyterlab) and this ``jupyterlab_bokeh`` extension for versions
+[JupyterLab](https://github.com/jupyterlab/jupyterlab) and this ``jupyter_bokeh`` extension for versions
 of ``bokeh>=0.12.0``.
 
-Our goal is that ``jupyterlab_bokeh`` minor releases (using the [SemVer](https://semver.org/) pattern) are
-made to follow JupyterLab minor release bumps and micro releases are for new ``jupyterlab_bokeh`` features
+Our goal is that ``jupyter_bokeh`` minor releases (using the [SemVer](https://semver.org/) pattern) are
+made to follow JupyterLab minor release bumps and micro releases are for new ``jupyter_bokeh`` features
 or bug fix releases. We've been previously inconsistent with having the extension release minor version bumps
 track that of JupyterLab, so users seeking to find extension releases that are compatible with their JupyterLab
 installation may refer to the below table.
 
-###### Compatible JupyterLab and jupyterlab_bokeh versions
+###### Compatible JupyterLab and jupyter_bokeh versions
 
-| JupyterLab    | jupyterlab_bokeh |
+| JupyterLab    | jupyter_bokeh |
 | ------------- | ---------------- |
 | 0.34.x        | 0.6.2            |
 | 0.35.x        | 0.6.3            |
@@ -42,7 +55,7 @@ installation may refer to the below table.
 
 ## Development
 
-For a development install (requires npm version 4 or later), do the following in the repository directory:
+For a development install (requires npm version 6 or later), do the following in the repository directory:
 
 ```bash
 npm install
@@ -74,6 +87,6 @@ please make a micro release bump (i.e. 0.6.3 -> 0.6.4).
 
 ## Testing
 
-There is a directory named ``test_cases`` which contains a collection of notebooks that cover the various ``jupyterlab_bokeh``
+There is a directory named ``test_cases`` which contains a collection of notebooks that cover the various ``jupyter_bokeh``
 functionalities. If you update the extension for new JupyterLab releases, please manually execute each and check that the
-expected behavior occurs. If you extend the ``jupyterlab_bokeh``, please add a new notebook that covers the new functionality.
+expected behavior occurs. If you extend the ``jupyter_bokeh``, please add a new notebook that covers the new functionality.
