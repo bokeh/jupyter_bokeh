@@ -22,7 +22,7 @@ install:
 script:
 - npm install
 - npm run build
-#- npm run lint
+- PARSER_NO_WATCH=true npm run lint
 - jupyter labextension install .
 - jupyter lab clean
 - jupyter labextension link .
