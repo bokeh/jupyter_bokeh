@@ -15,13 +15,14 @@ install:
 - conda config --add channels bokeh
 - conda config --add channels conda-forge
 - conda info -a
-- conda install nodejs selenium jupyterlab notebook geckodriver firefox
+- conda install conda-build nodejs selenium jupyterlab notebook geckodriver firefox
 - npm set progress false
 - npm install -g npm
+- conda build conda.recipe/
 script:
 - npm install
 - npm run build
-- npm run lint
+#- npm run lint
 - jupyter labextension install .
 - jupyter lab clean
 - jupyter labextension link .

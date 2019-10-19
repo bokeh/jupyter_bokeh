@@ -1,4 +1,7 @@
-*.bundle.*
-lib/
-node_modules/
-*.egg-info/
+/lib/
+/dist/
+/node_modules/
+/build/
+/*.egg-info/
+/*.tgz
+.ipynb_checkpoints/
