@@ -34,7 +34,7 @@ setup_args = dict(
     author="Bokeh Team",
     author_email="info@bokeh.org",
     license="BSD-3-Clause",
-    url="https://github.com/bokeh/jupyterlab_bokeh",
+    url="https://github.com/bokeh/jupyter_bokeh",
     packages=find_packages(),
     classifiers=[
         "License :: OSI Approved :: BSD License",
