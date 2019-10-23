@@ -87,6 +87,6 @@ please make a micro release bump (i.e. 0.6.3 -> 0.6.4).
 
 ## Testing
 
-There is a directory named ``test_cases`` which contains a collection of notebooks that cover the various ``jupyter_bokeh``
+There is a directory named ``examples`` which contains a collection of notebooks that cover the various ``jupyter_bokeh``
 functionalities. If you update the extension for new JupyterLab releases, please manually execute each and check that the
 expected behavior occurs. If you extend the ``jupyter_bokeh``, please add a new notebook that covers the new functionality.
