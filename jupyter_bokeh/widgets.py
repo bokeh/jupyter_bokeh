@@ -40,7 +40,7 @@ __all__ = (
 )
 
 _module_name = "@bokeh/jupyter_bokeh"
-_module_version = "1.1.0-dev.1"
+_module_version = "^1.1.0-dev.1"
 
 #-----------------------------------------------------------------------------
 # General API
