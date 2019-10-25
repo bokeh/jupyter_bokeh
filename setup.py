@@ -26,7 +26,7 @@ install_requires = [
 
 setup_args = dict(
     name="jupyter_bokeh",
-    version="1.1.0dev1",
+    version="1.1.0dev2",
     install_requires=install_requires,
     description="A Jupyter extension for rendering Bokeh content.",
     long_description=open("README.md").read(),
