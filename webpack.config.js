@@ -1,5 +1,10 @@
+const fs = require("fs")
 const path = require("path")
-const {version} = require("./package.json")
+
+const {name, version} = require("./package.json")
+
+const metadata = JSON.stringify({name, version})
+fs.writeFileSync("./lib/metadata.js", `Object.assign(exports, ${metadata})`)
 
 const externals = [/^@jupyterlab\/.+$/]
 
@@ -15,7 +20,7 @@ module.exports = [
     output: {
       filename: "index.js",
       path: path.resolve(__dirname, "jupyter_bokeh", "nbextension", "static"),
-      libraryTarget: "amd"
+      libraryTarget: "amd",
     },
     externals,
     devtool: "source-map",
@@ -38,8 +43,8 @@ module.exports = [
       filename: "index.js",
       path: path.resolve(__dirname, "dist"),
       libraryTarget: "amd",
-      library: "@bokeh/jupyter_bokeh",
-      publicPath: "https://unpkg.com/@bokeh/jupyter_bokeh@" + version + "/dist/"
+      library: name,
+      publicPath: `https://unpkg.com/${name}@${version}/dist/`,
     },
     externals,
     devtool: "source-map",
