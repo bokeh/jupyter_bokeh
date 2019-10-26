@@ -35,3 +35,10 @@ about:
   home: {{ data["url"] }}
   license: {{ data["license"] }}
   summary: {{ data["description"] }}
+
+extra:
+  deploy:
+    - anaconda-client
+    - setuptools
+    - twine
+    - jq
