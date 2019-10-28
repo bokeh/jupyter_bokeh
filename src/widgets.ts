@@ -4,6 +4,8 @@ import {DOMWidgetModel, DOMWidgetView} from "@jupyter-widgets/base"
 //import {Receiver, Fragment} from "protocol/receiver"
 //import {keys, values} from "core/util/object"
 
+import {name, version} from "./metadata"
+
 function bk_require(name: string): any {
   return (window as any).Bokeh.require(name)
 }
@@ -17,8 +19,7 @@ type Fragment = any
 
 const {keys, values} = Object as any
 
-const module_name = "@bokeh/jupyter_bokeh"
-const module_version = "^1.1.0-dev.1"
+const version_range = `^${version}`
 
 export type RenderBundle = {
   docs_json: DocsJson
@@ -32,12 +33,12 @@ export class BokehModel extends DOMWidgetModel {
       ...super.defaults(),
 
       _model_name: "BokehModel",
-      _model_module: module_name,
-      _model_module_version: module_version,
+      _model_module: name,
+      _model_module_version: version_range,
 
       _view_name: "BokehView",
-      _view_module: module_name,
-      _view_module_version: module_version,
+      _view_module: name,
+      _view_module_version: version_range,
 
       render_bundle: {},
     }

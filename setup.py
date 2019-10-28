@@ -5,7 +5,7 @@ from setuptools import setup, find_packages, Command
 
 class BuildJS(Command):
 
-    description = "runs 'npm install && npm pack'"
+    description = "runs 'npm install && npm run prepack'"
     user_options = []
 
     def initialize_options(self):
@@ -17,7 +17,7 @@ class BuildJS(Command):
     def run(self):
         npm = "npm" if sys.platform != "win32" else "npm.bat"
         self.spawn([npm, "install"])
-        self.spawn([npm, "pack"])
+        self.spawn([npm, "run", "prepack"])
 
 install_requires = [
     "bokeh >=1.3.4",
@@ -26,7 +26,7 @@ install_requires = [
 
 setup_args = dict(
     name="jupyter_bokeh",
-    version="1.1.0dev1",
+    version="1.1.0dev2",
     install_requires=install_requires,
     description="A Jupyter extension for rendering Bokeh content.",
     long_description=open("README.md").read(),

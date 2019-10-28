@@ -40,18 +40,19 @@ export class NBWidgetExtension implements INBWidgetExtension {
   }
 }
 
+import {name, version} from "./metadata"
 import {BokehModel, BokehView} from "./widgets"
 
 export const extension: JupyterFrontEndPlugin<void> = {
-  id: "@bokeh/jupyter_bokeh",
+  id: name,
   requires: [IJupyterWidgetRegistry],
   activate: (app: JupyterFrontEnd, widgets: IJupyterWidgetRegistry) => {
     // this adds the Bokeh widget extension onto Notebooks specifically
     app.docRegistry.addWidgetExtension("Notebook", new NBWidgetExtension())
 
     widgets.registerWidget({
-      name: "@bokeh/jupyter_bokeh",
-      version: "1.1.0-dev.1",
+      name,
+      version,
       exports: {
         BokehModel: BokehModel as any,
         BokehView: BokehView as any,
