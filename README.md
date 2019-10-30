@@ -11,7 +11,7 @@ A Jupyter extension for rendering Bokeh content.
 To install the latest version in Jupyter Lab:
 
 ```bash
-const install -c bokeh jupyter_bokeh
+conda install -c bokeh jupyter_bokeh
 jupyter labextension install @jupyter-widgets/jupyterlab-manager
 jupyter labextension install @bokeh/jupyter_bokeh
 ```
