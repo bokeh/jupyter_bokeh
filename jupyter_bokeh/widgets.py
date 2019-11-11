@@ -91,6 +91,8 @@ class BokehModel(DOMWidget):
         self._document.on_change_dispatch_to(self)
 
     def _document_patched(self, event):
+        if event.setter is self:
+            return
         msg = Protocol("1.0").create("PATCH-DOC", [event])
 
         self.send({"msg": "patch", "payload": msg.header_json})
@@ -105,8 +107,9 @@ class BokehModel(DOMWidget):
             return
         new, old, attr = content["new"], content["old"], content["attr"]
         submodel = self._model.select_one({"id": content["id"]})
+        descriptor = submodel.lookup(content['attr'])
         try:
-            setattr(submodel, attr, new)
+            descriptor._real_set(submodel, old, new, setter=self)
         except Exception:
             return
         for cb in submodel._callbacks.get(attr, []):
