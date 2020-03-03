@@ -98,6 +98,7 @@ export class BokehJSExec extends Widget implements IRenderMime.IRenderer {
       for (const i in script_attrs) {
         this._script_element.setAttribute(script_attrs[i].name, script_attrs[i].value)
       }
+      this._script_element.textContent = d.textContent
     }
 
     this.node.appendChild(this._script_element)
