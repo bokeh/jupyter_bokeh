@@ -2,7 +2,7 @@ import {DocumentRegistry} from "@jupyterlab/docregistry"
 import {INotebookModel, NotebookPanel} from "@jupyterlab/notebook"
 import {JupyterFrontEndPlugin, JupyterFrontEnd} from "@jupyterlab/application"
 import {IJupyterWidgetRegistry} from "@jupyter-widgets/base"
-import {IDisposable, DisposableDelegate} from "@phosphor/disposable"
+import {IDisposable, DisposableDelegate} from "@lumino/disposable"
 
 import {ContextManager} from "./manager"
 import {
