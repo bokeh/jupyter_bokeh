@@ -1,7 +1,7 @@
 import {IRenderMime} from "@jupyterlab/rendermime-interfaces"
 import {KernelMessage, Kernel} from "@jupyterlab/services"
-import {ReadonlyJSONObject} from "@phosphor/coreutils"
-import {Widget} from "@phosphor/widgets"
+import {ReadonlyJSONObject} from "@lumino/coreutils"
+import {Widget} from "@lumino/widgets"
 import {ContextManager} from "./manager"
 
 export declare interface KernelProxy {
@@ -76,13 +76,13 @@ export class BokehJSExec extends Widget implements IRenderMime.IRenderer {
         const {_manager} = this
         const kernel_proxy: KernelProxy = {
           registerCommTarget(targetName, callback) {
-            const {kernel} = _manager!.context.session
+            const kernel = _manager!.context.sessionContext.session?.kernel
             if (kernel != null)
               kernel.registerCommTarget(targetName, callback)
           },
         }
         Bokeh.embed.kernels[this._document_id] = kernel_proxy
-        _manager!.context.session.statusChanged.connect((_session, status) => {
+        _manager!.context.sessionContext.statusChanged.connect((_session, status) => {
           if (status == "restarting" || status === "dead") {
             delete Bokeh.embed.kernels[this._document_id!]
           }
@@ -114,7 +114,7 @@ export class BokehJSExec extends Widget implements IRenderMime.IRenderer {
       const content: KernelMessage.IExecuteRequestMsg["content"] = {
         code: `import bokeh.io.notebook as ion; ion.destroy_server("${this._server_id}")`,
       }
-      const {kernel} = this._manager!.context.session
+      const kernel = this._manager!.context.sessionContext.session?.kernel
       if (kernel != null)
         kernel.requestExecute(content, true)
       this._server_id = null

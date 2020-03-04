@@ -1,4 +1,4 @@
-import {IDisposable} from "@phosphor/disposable"
+import {IDisposable} from "@lumino/disposable"
 import {DocumentRegistry} from "@jupyterlab/docregistry"
 
 /**
