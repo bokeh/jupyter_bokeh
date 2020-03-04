@@ -1,6 +1,5 @@
 language: generic
-sudo: false
-dist: trusty
+dist: bionic
 cache:
   directories:
     - $HOME/.npm
@@ -15,7 +14,7 @@ install:
 - conda config --add channels bokeh
 - conda config --add channels conda-forge
 - conda info -a
-- conda install conda-build nodejs selenium jupyterlab notebook geckodriver firefox
+- conda install conda-build nodejs jupyterlab notebook
 - npm set progress false
 - npm install -g npm
 - conda build conda.recipe/
@@ -26,4 +25,4 @@ script:
 - jupyter labextension install .
 - jupyter lab clean
 - jupyter labextension link .
-- python -m jupyterlab.selenium_check
+- python -m jupyterlab.browser_check
