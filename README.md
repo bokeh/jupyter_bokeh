@@ -45,9 +45,9 @@ or bug fix releases. We've been previously inconsistent with having the extensio
 track that of JupyterLab, so users seeking to find extension releases that are compatible with their JupyterLab
 installation may refer to the below table.
 
-###### Compatible JupyterLab and jupyter_bokeh versions
+###### Compatible JupyterLab and `jupyter_bokeh` versions
 
-| JupyterLab    | jupyter_bokeh |
+| JupyterLab    | `jupyter_bokeh`  |
 | ------------- | ---------------- |
 | 0.34.x        | 0.6.2            |
 | 0.35.x        | 0.6.3            |
