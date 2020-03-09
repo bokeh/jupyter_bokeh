@@ -36,8 +36,8 @@ jupyter nbextension enable jupyter_bokeh --py --sys-prefix
 ## Compatibility
 
 The core [Bokeh](https://github.com/bokeh/bokeh) library is generally version independent of
-[JupyterLab](https://github.com/jupyterlab/jupyterlab) and this ``jupyter_bokeh`` extension for versions
-of ``bokeh>=0.12.0``.
+[JupyterLab](https://github.com/jupyterlab/jupyterlab) and this ``jupyter_bokeh`` extension
+for versions of ``bokeh>=2.0.0``.
 
 Our goal is that ``jupyter_bokeh`` minor releases (using the [SemVer](https://semver.org/) pattern) are
 made to follow JupyterLab minor release bumps and micro releases are for new ``jupyter_bokeh`` features

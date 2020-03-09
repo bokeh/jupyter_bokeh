@@ -20,7 +20,7 @@ class BuildJS(Command):
         self.spawn([npm, "run", "prepack"])
 
 install_requires = [
-    "bokeh >=1.3.4",
+    "bokeh >=2.0.0",
     "ipywidgets >=7.0.0",
 ]
 
