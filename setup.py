@@ -28,6 +28,7 @@ setup_args = dict(
     name="jupyter_bokeh",
     version="2.0.0",
     install_requires=install_requires,
+    python_requires=">=3.6",
     description="A Jupyter extension for rendering Bokeh content.",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
