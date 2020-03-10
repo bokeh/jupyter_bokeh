@@ -1,5 +1,5 @@
 #-----------------------------------------------------------------------------
-# Copyright (c) 2012 - 2019, Anaconda, Inc., and Bokeh Contributors.
+# Copyright (c) 2012 - 2020, Anaconda, Inc., and Bokeh Contributors.
 # All rights reserved.
 #
 # The full license is in the file LICENSE.txt, distributed with this software.
@@ -13,7 +13,6 @@ and performs bi-directional syncing just like bokeh server does.
 #-----------------------------------------------------------------------------
 # Boilerplate
 #-----------------------------------------------------------------------------
-from __future__ import absolute_import, division, print_function, unicode_literals
 
 # Standard library imports
 import json
@@ -40,7 +39,7 @@ __all__ = (
 )
 
 _module_name = "@bokeh/jupyter_bokeh"
-_module_version = "^1.2.0"
+_module_version = "^2.0.0"
 
 #-----------------------------------------------------------------------------
 # General API
@@ -93,7 +92,7 @@ class BokehModel(DOMWidget):
     def _document_patched(self, event):
         if event.setter is self:
             return
-        msg = Protocol("1.0").create("PATCH-DOC", [event])
+        msg = Protocol().create("PATCH-DOC", [event])
 
         self.send({"msg": "patch", "payload": msg.header_json})
         self.send({"msg": "patch", "payload": msg.metadata_json})
