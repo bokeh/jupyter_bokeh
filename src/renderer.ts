@@ -9,7 +9,27 @@ export declare interface KernelProxy {
   registerCommTarget(targetName: string, callback: (comm: Kernel.IComm, msg: KernelMessage.ICommOpenMsg) => void): void
 }
 
-declare const Bokeh: any | undefined
+declare const Bokeh: any
+
+function poll(fn: () => boolean, wait: number = 1000, interval: number = 100): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (fn()) {
+      resolve()
+    } else {
+      const id = setInterval(() => {
+        if (fn()) {
+          clearInterval(id)
+          resolve()
+        }
+        wait -= interval
+        if (wait <= 0) {
+          clearInterval(id)
+          reject(new Error("timeout"))
+        }
+      }, interval)
+    }
+  })
+}
 
 /**
  * The MIME types for BokehJS.
@@ -64,30 +84,29 @@ export class BokehJSExec extends Widget implements IRenderMime.IRenderer {
     return this._manager == null
   }
 
-  renderModel(model: IRenderMime.IMimeModel): Promise<void> {
+  async renderModel(model: IRenderMime.IMimeModel): Promise<void> {
     const metadata = model.metadata[this._exec_mimetype] as ReadonlyJSONObject
 
     if (metadata.id !== undefined) {
       // I'm a static document
       const data = model.data[this._js_mimetype] as string
       this._script_element.textContent = data
-      if (Bokeh !== undefined && Bokeh.embed.kernels !== undefined) {
-        this._document_id = metadata.id as string
-        const {_manager} = this
-        const kernel_proxy: KernelProxy = {
-          registerCommTarget(targetName, callback) {
-            const kernel = _manager!.context.sessionContext.session?.kernel
-            if (kernel != null)
-              kernel.registerCommTarget(targetName, callback)
-          },
-        }
-        Bokeh.embed.kernels[this._document_id] = kernel_proxy
-        _manager!.context.sessionContext.statusChanged.connect((_session, status) => {
-          if (status == "restarting" || status === "dead") {
-            delete Bokeh.embed.kernels[this._document_id!]
-          }
-        }, this)
+      await poll(() => typeof Bokeh !== "undefined")
+      this._document_id = metadata.id as string
+      const {_manager} = this
+      const kernel_proxy: KernelProxy = {
+        registerCommTarget(targetName, callback) {
+          const kernel = _manager!.context.sessionContext.session?.kernel
+          if (kernel != null)
+            kernel.registerCommTarget(targetName, callback)
+        },
       }
+      Bokeh.embed.kernels[this._document_id] = kernel_proxy
+      _manager!.context.sessionContext.statusChanged.connect((_session, status) => {
+        if (status == "restarting" || status === "dead") {
+          delete Bokeh.embed.kernels[this._document_id!]
+        }
+      }, this)
     } else if (metadata.server_id !== undefined) {
       // I'm a server document
       this._server_id = metadata.server_id as string
@@ -102,8 +121,6 @@ export class BokehJSExec extends Widget implements IRenderMime.IRenderer {
     }
 
     this.node.appendChild(this._script_element)
-
-    return Promise.resolve()
   }
 
   dispose(): void {
