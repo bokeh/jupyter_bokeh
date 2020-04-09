@@ -21,7 +21,7 @@ class BuildJS(Command):
 
 install_requires = [
     "bokeh >=2.0.0",
-    "ipywidgets >=7.0.0",
+    "ipywidgets >=7.5.0",
 ]
 
 setup_args = dict(
