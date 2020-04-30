@@ -19,7 +19,7 @@ import json
 
 # External imports
 from ipywidgets import DOMWidget
-from traitlets import Unicode, Dict
+from traitlets import Bool, Dict, Unicode
 
 # Bokeh imports
 from bokeh.core.json_encoder import serialize_json
@@ -55,6 +55,7 @@ class BokehModel(DOMWidget):
     _view_module = Unicode(_module_name).tag(sync=True)
     _view_module_version = Unicode(_module_version).tag(sync=True)
 
+    combine_events = Bool(False).tag(sync=True)
     render_bundle = Dict().tag(sync=True, to_json=lambda obj, _: serialize_json(obj))
 
     @property
