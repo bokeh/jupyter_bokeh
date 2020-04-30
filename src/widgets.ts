@@ -66,10 +66,12 @@ export class BokehView extends DOMWidgetView {
     const {Receiver} = bk_require("protocol/receiver")
     this._receiver = new Receiver()
     this.model.on("change:render_bundle", () => this.render())
-    if ((window as any).Jupyter != null) {
+    if ((window as any).Jupyter != null && (window as any).Jupyter.notebook != null) {
+	  // Handle classic Jupyter notebook
       const events = (window as any).require('base/js/events')
       events.on('kernel_idle.Kernel', () => this._process_msg())
-    } else {
+    } else if ((this.model.widget_manager as any).context != null) {
+	  // Handle JupyterLab
       (this.model.widget_manager as any).context.sessionContext.statusChanged.connect((_: any, status: any) => {
         if (status === "idle")
           this._process_msg()
@@ -108,6 +110,7 @@ export class BokehView extends DOMWidgetView {
     const {ModelChangedEvent} = bk_require("document/events")
     if (!this._blocked && event instanceof ModelChangedEvent) {
       if (!this._idle && this.model.get("combine_events")) {
+		// Queue event and drop previous events on same model attribute
         const new_msgs = []
         for (const msg of this._msgs) {
           if ((msg.id != event.model.id) || (msg.attr != event.attr))
