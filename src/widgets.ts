@@ -30,7 +30,7 @@ export type RenderBundle = {
 export class BokehModel extends DOMWidgetModel {
   defaults() {
     return {
-      ...super.defaults(),  
+      ...super.defaults(),
 
       _model_name: "BokehModel",
       _model_module: name,
@@ -110,7 +110,7 @@ export class BokehView extends DOMWidgetView {
     const {ModelChangedEvent} = bk_require("document/events")
     if (!this._blocked && event instanceof ModelChangedEvent) {
       if (!this._idle && this.model.get("combine_events")) {
-		// Queue event and drop previous events on same model attribute
+        // Queue event and drop previous events on same model attribute
         const new_msgs = []
         for (const msg of this._msgs) {
           if ((msg.id != event.model.id) || (msg.attr != event.attr))
