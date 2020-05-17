@@ -154,7 +154,7 @@ export class BokehView extends DOMWidgetView {
       if (new_msg.kind != msg.kind)
         new_msgs.push(msg)
       else if (isModelChanged(msg) && isModelChanged(new_msg)) {
-       if (msg.id != new_msg.id || msg.attr != new_msg.attr)
+        if (msg.id != new_msg.id || msg.attr != new_msg.attr)
           new_msgs.push(msg)
       } else if (isMessageSent(msg) && isMessageSent(new_msg)) {
         if (
@@ -182,26 +182,26 @@ export class BokehView extends DOMWidgetView {
     if (this._blocked) { return }
     const {ModelChangedEvent, MessageSentEvent} = bk_require("document/events")
     if (event instanceof ModelChangedEvent) {
-      let js_msg: ModelChanged = {
+      const js_msg: ModelChanged = {
         event: "jsevent",
         kind: "ModelChanged",
         id: event.model.id,
         attr: event.attr,
         new: event.new_,
         old: event.old,
-        hint: null
+        hint: null,
       }
       if (event.hint != null) {
         if (event.hint.patches != null) {
           js_msg["hint"] = {
             column_source: event.hint.column_source,
-            patches: event.hint.patches
-          }  
+            patches: event.hint.patches,
+          }
         } else if (event.hint.data != null) {
           js_msg["hint"] = {
             column_source: event.hint.column_source,
             data: event.hint.data,
-            rollover: event.hint.rollover
+            rollover: event.hint.rollover,
           }
         }
       }
@@ -211,11 +211,11 @@ export class BokehView extends DOMWidgetView {
       const event_values = {...msg_data.event_values}
       event_values["model"] = {id: event_values.model.id}
       msg_data["event_values"] = event_values
-      let js_msg: MessageSent = {
+      const js_msg: MessageSent = {
         event: "jsevent",
         kind: "MessageSent",
         msg_type: event.msg_type,
-        msg_data: msg_data
+        msg_data: msg_data,
       }
       this._send(js_msg)
     }
