@@ -55,14 +55,6 @@ export interface MessageSent extends DocumentChanged {
   msg_type: string
 }
 
-function isModelChanged(msg: DocumentChanged): msg is ModelChanged {
-  return (msg as ModelChanged).kind === "ModelChanged"
-}
-
-function isMessageSent(msg: DocumentChanged): msg is MessageSent {
-  return (msg as MessageSent).kind === "MessageSent"
-}
-
 export class BokehModel extends DOMWidgetModel {
   defaults() {
     return {
@@ -148,15 +140,15 @@ export class BokehView extends DOMWidgetView {
     this._document.on_change((event: any) => this._change_event(event))
   }
 
-  _combine_events(new_msg: any): DocumentChanged[] {
+  _combine_events(new_msg: (ModelChanged | MessageSent)): (ModelChanged | MessageSent)[] {
     const new_msgs = []
     for (const msg of this._msgs) {
       if (new_msg.kind != msg.kind)
         new_msgs.push(msg)
-      else if (isModelChanged(msg) && isModelChanged(new_msg)) {
+      else if (msg.kind == "ModelChanged" && new_msg.kind == "ModelChanged") {
         if (msg.id != new_msg.id || msg.attr != new_msg.attr)
           new_msgs.push(msg)
-      } else if (isMessageSent(msg) && isMessageSent(new_msg)) {
+      } else if (msg.kind == "MessageSent" && new_msg.kind == "MessageSent") {
         if (
           msg.msg_data.event_values.model.id != new_msg.msg_data.event_values.model.id ||
           msg.msg_data.event_name != new_msg.msg_data.event_name
@@ -168,7 +160,7 @@ export class BokehView extends DOMWidgetView {
     return new_msgs
   }
 
-  _send(msg: DocumentChanged): void {
+  _send(msg: (ModelChanged | MessageSent)): void {
     if (!this._idle && this._combine && this.model.get("combine_events"))
       // Queue event and drop previous events on same model attribute
       this._msgs = this._combine_events(msg)
