@@ -15,7 +15,8 @@ install:
 - conda config --add channels conda-forge
 - conda update -q conda
 - conda info -a
-- conda install conda-build nodejs jupyterlab notebook
+- conda create -n test_env conda-build nodejs jupyterlab notebook
+- conda activate test_env
 - npm set progress false
 - npm install -g npm
 - conda build conda.recipe/
