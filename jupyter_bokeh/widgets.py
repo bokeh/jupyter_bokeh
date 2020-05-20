@@ -19,16 +19,17 @@ import json
 
 # External imports
 from ipywidgets import DOMWidget
-from traitlets import Unicode, Dict
+from traitlets import Bool, Dict, Unicode
 
 # Bokeh imports
 from bokeh.core.json_encoder import serialize_json
-from bokeh.models import LayoutDOM
 from bokeh.document import Document
-from bokeh.protocol import Protocol
-from bokeh.util.dependencies import import_optional
 from bokeh.embed.elements import div_for_render_item
 from bokeh.embed.util import standalone_docs_json_and_render_items
+from bokeh.events import Event
+from bokeh.models import LayoutDOM
+from bokeh.protocol import Protocol
+from bokeh.util.dependencies import import_optional
 
 #-----------------------------------------------------------------------------
 # Globals and constants
@@ -55,6 +56,7 @@ class BokehModel(DOMWidget):
     _view_module = Unicode(_module_name).tag(sync=True)
     _view_module_version = Unicode(_module_version).tag(sync=True)
 
+    combine_events = Bool(False).tag(sync=True)
     render_bundle = Dict().tag(sync=True, to_json=lambda obj, _: serialize_json(obj))
 
     @property
@@ -104,15 +106,31 @@ class BokehModel(DOMWidget):
     def _sync_model(self, _, content, _buffers):
         if content.get("event", "") != "jsevent":
             return
-        new, old, attr = content["new"], content["old"], content["attr"]
-        submodel = self._model.select_one({"id": content["id"]})
-        descriptor = submodel.lookup(content['attr'])
-        try:
-            descriptor._real_set(submodel, old, new, setter=self)
-        except Exception:
-            return
-        for cb in submodel._callbacks.get(attr, []):
-            cb(attr, old, new)
+        kind = content.get("kind")
+        if kind == 'ModelChanged':
+            hint = content.get("hint")
+            if hint:
+                cds = self._model.select_one({"id": hint["column_source"]["id"]})
+                if "patches" in hint:
+                    # Handle ColumnsPatchedEvent
+                    cds.patch(hint["patches"], setter=self)
+                elif "data" in hint:
+                    # Handle ColumnsStreamedEvent
+                    cds._stream(hint["data"], rollover=hint["rollover"], setter=self)
+                return
+
+            # Handle ModelChangedEvent
+            new, old, attr = content["new"], content["old"], content["attr"]
+            submodel = self._model.select_one({"id": content["id"]})
+            descriptor = submodel.lookup(content['attr'])
+            try:
+                descriptor._real_set(submodel, old, new, hint=hint, setter=self)
+            except Exception:
+                return
+            for cb in submodel._callbacks.get(attr, []):
+                cb(attr, old, new)
+        elif kind == 'MessageSent':
+            self._document.apply_json_event(content["msg_data"])
 
 #-----------------------------------------------------------------------------
 # Dev API

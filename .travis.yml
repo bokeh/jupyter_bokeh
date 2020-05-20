@@ -6,15 +6,17 @@ cache:
 install:
 - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
 - bash miniconda.sh -b -p $HOME/miniconda
-- export PATH="$HOME/miniconda/bin:$PATH"
+- source "$HOME/miniconda/etc/profile.d/conda.sh"
 - hash -r
 - conda config --set always_yes yes
 - conda config --set quiet yes
 - conda config --set changeps1 no
 - conda config --add channels bokeh
 - conda config --add channels conda-forge
+- conda update -q conda
 - conda info -a
-- conda install conda-build nodejs jupyterlab notebook
+- conda create -n test_env conda-build nodejs jupyterlab notebook
+- conda activate test_env
 - npm set progress false
 - npm install -g npm
 - conda build conda.recipe/
