@@ -101,14 +101,22 @@ export class BokehView extends DOMWidgetView {
       const events = (window as any).require('base/js/events')
       events.on('kernel_idle.Kernel', () => this._process_msg())
     } else if ((this.model.widget_manager as any).context != null) {
-      // Handle JupyterLab
-      (this.model.widget_manager as any).context.sessionContext.statusChanged.connect((_: any, status: any) => {
-        if (status === "idle")
-          this._process_msg()
-      })
-    } else {
-      if (this.model.get("combine_events"))
+      // Handle JupyterLab and Voila
+      const context = (this.model.widget_manager as any).context
+      const statusChanged = (context.session != null ?
+                             context.session.kernel.statusChanged :
+                             context.sessionContext.statusChanged)
+      if (statusChanged != null) {
+        statusChanged.connect((_: any, status: any) => {
+          if (status === "idle")
+            this._process_msg()
+        })
+      } else if (this.model.get("combine_events")) {
         console.warn("BokehView cannot combine events because Kernel idle status cannot be determined.")
+        this._combine = false
+      }
+    } else if (this.model.get("combine_events")) {
+      console.warn("BokehView cannot combine events because Kernel idle status cannot be determined.")
       this._combine = false
     }
     this.listenTo(this.model, "msg:custom", (content, buffers) => this._consume_patch(content, buffers))
