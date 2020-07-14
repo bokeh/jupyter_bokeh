@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# Assumptions:
-#
-# 1. NPM token is configured in ~/.npmrc
-# 2. PyPI user and token is configured in ~/.pypirc
-# 3. Anaconda token is configured in ~/.tokens/anaconda
-
 set -e
 set -x
 
@@ -16,10 +10,12 @@ then
 fi
 
 git clean -dfx
-npm publish --access public
+npm install
+npm publish --access public # token is configured in ~/.npmrc; requires OTP
 
 git clean -dfx
-python setup.py build_js sdist upload
+python setup.py build_js sdist
+twine upload -u __token__ -p $(cat ~/.tokens/pypi_jupyter_bokeh) dist/jupyter_bokeh-*.tar.gz
 
 git clean -dfx
 conda build conda.recipe
