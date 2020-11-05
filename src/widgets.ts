@@ -158,6 +158,7 @@ export class BokehView extends DOMWidgetView {
           new_msgs.push(msg)
       } else if (msg.kind == "MessageSent" && new_msg.kind == "MessageSent") {
         if (
+          msg.msg_data.event_values.model == null ||
           msg.msg_data.event_values.model.id != new_msg.msg_data.event_values.model.id ||
           msg.msg_data.event_name != new_msg.msg_data.event_name
         )
@@ -209,7 +210,8 @@ export class BokehView extends DOMWidgetView {
     } else if ((event instanceof MessageSentEvent) && (event.msg_type == "bokeh_event")) {
       const msg_data = {...event.msg_data}
       const event_values = {...msg_data.event_values}
-      event_values["model"] = {id: event_values.model.id}
+      if (event_values.model != null)
+        event_values["model"] = {id: event_values.model.id}
       msg_data["event_values"] = event_values
       const js_msg: MessageSent = {
         event: "jsevent",
