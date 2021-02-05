@@ -16,14 +16,15 @@
     "sourceMap": false,
     "importHelpers": true,
     "experimentalDecorators": true,
-    "module": "commonjs",
+    "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "target": "ES2015",
+    "target": "ES2017",
     "lib": ["es2015", "dom"],
     "baseUrl": ".",
-    "outDir": "./lib"
+    "outDir": "lib",
+    "types": ["node"]
   },
-  "include": ["./src/**/*.ts"]
+  "include": ["./src/*"]
 }

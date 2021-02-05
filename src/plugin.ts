@@ -10,6 +10,7 @@ import {
   BokehJSLoad,
   BOKEHJS_EXEC_MIME_TYPE,
   BOKEHJS_LOAD_MIME_TYPE} from "./renderer"
+import {BokehModel, BokehView} from "./widgets"
 
 export type INBWidgetExtension = DocumentRegistry.IWidgetExtension<NotebookPanel, INotebookModel>
 
@@ -40,8 +41,8 @@ export class NBWidgetExtension implements INBWidgetExtension {
   }
 }
 
-import {name, version} from "./metadata"
-import {BokehModel, BokehView} from "./widgets"
+declare const name: string
+declare const version: string
 
 export const extension: JupyterFrontEndPlugin<void> = {
   id: name,

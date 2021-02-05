@@ -4,7 +4,8 @@ import {DOMWidgetModel, DOMWidgetView} from "@jupyter-widgets/base"
 //import {Receiver, Fragment} from "protocol/receiver"
 //import {keys, values} from "core/util/object"
 
-import {name, version} from "./metadata"
+declare const name: string
+declare const version: string
 
 function bk_require(name: string): any {
   return (window as any).Bokeh.require(name)
