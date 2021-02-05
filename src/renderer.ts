@@ -80,10 +80,6 @@ export class BokehJSExec extends Widget implements IRenderMime.IRenderer {
     this._manager = manager
   }
 
-  get isDisposed(): boolean {
-    return this._manager == null
-  }
-
   async renderModel(model: IRenderMime.IMimeModel): Promise<void> {
     const metadata = model.metadata[this._exec_mimetype] as ReadonlyJSONObject
 
@@ -127,6 +123,7 @@ export class BokehJSExec extends Widget implements IRenderMime.IRenderer {
     if (this.isDisposed)
       return
 
+    super.dispose();
     if (this._server_id) {
       const content: KernelMessage.IExecuteRequestMsg["content"] = {
         code: `import bokeh.io.notebook as ion; ion.destroy_server("${this._server_id}")`,
