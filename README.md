@@ -53,6 +53,7 @@ installation may refer to the below table.
 | 0.35.x        | 0.6.3            |
 | 1.0.x         | 1.0.0            |
 | 2.0.x         | 2.0.0            |
+| 3.0.x         | 3.0.0            |
 
 ## Development
 
