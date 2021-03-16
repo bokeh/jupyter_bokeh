@@ -140,7 +140,7 @@ export class BokehView extends DOMWidgetView {
     const {add_document_standalone} = bk_require("embed/standalone")
     this._document = Document.from_json(json)
     for (const item of render_items) {
-      const roots: {[key: string]: HTMLElement} = {}
+      const roots: {[key: string]: Element} = {}
       for (const root_id in item.roots)
         roots[root_id] = element
       add_document_standalone(this._document, element, roots)
