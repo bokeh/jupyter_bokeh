@@ -36,7 +36,7 @@ labext_name = "@bokeh/jupyter_bokeh"
 data_files_spec = [
     ("share/jupyter/labextensions/%s" % labext_name, str(lab_path), "**"),
     ("share/jupyter/labextensions/%s" % labext_name, str(HERE), "install.json"),
-    ("share/jupyter/nbextensions/%s" % labext_name, str(nb_path), '**'),
+    ("share/jupyter/nbextensions/%s" % name, str(nb_path), '**'),
     ("etc/jupyter/nbconfig/notebook.d", str(HERE), "jupyter_bokeh.json")
 ]
 
