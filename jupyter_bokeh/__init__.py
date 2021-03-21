@@ -1,5 +1,17 @@
+import json
+
+from pathlib import Path
+
 from .nbextension import _jupyter_nbextension_paths
+from ._version import __version__
 
-from .widgets import BokehModel
+HERE = Path(__file__).parent.resolve()
 
-__version__ = "2.0.4"
+with (HERE / "labextension" / "package.json").open() as fid:
+    data = json.load(fid)
+
+def _jupyter_labextension_paths():
+    return [{
+        "src": "labextension",
+        "dest": data["name"]
+    }]

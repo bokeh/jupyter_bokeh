@@ -1,4 +1,26 @@
+include LICENSE
 include README.md
-include LICENSE.txt
-include jupyter_bokeh.json
+include pyproject.toml
+include jupyter-config/jupyter_bokeh.json
+
+include package.json
+include install.json
+include ts*.json
+include yarn.lock
+
 recursive-include jupyter_bokeh/nbextension/static *.js *.js.map *.d.ts
+
+graft jupyter_bokeh/labextension
+
+# Javascript files
+graft src
+graft style
+prune **/node_modules
+prune lib
+
+# Patterns to exclude from any directory
+global-exclude *~
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude .git
+global-exclude .ipynb_checkpoints

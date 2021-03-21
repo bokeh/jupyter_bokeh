@@ -1,14 +1,26 @@
 # jupyter_bokeh
 
+![Github Actions Status](https://github.com/bokeh/jupyter_bokeh/workflows/Build/badge.svg)
+
 A Jupyter extension for rendering [Bokeh](https://bokeh.org) content within Jupyter.  See also the separate [ipywidgets_bokeh](https://github.com/bokeh/ipywidgets_bokeh) library for support for using Jupyter widgets/ipywidgets objects within Bokeh applications.
 
-## Prerequisites
 
-* Jupyter Lab or Notebook
-
-## Installation
+## Install
 
 To install the latest version in Jupyter Lab:
+
+```bash
+pip install jupyter_bokeh
+```
+
+or
+
+```
+conda install -c bokeh jupyter_bokeh
+```
+
+For versions of Jupyter Lab <3.0 you must install the labextension
+separately:
 
 ```bash
 conda install -c bokeh jupyter_bokeh
@@ -20,17 +32,6 @@ To install a specific version:
 
 ```bash
 jupyter labextension install @bokeh/jupyter_bokeh@x.y.x
-```
-
-On slow or limited memory systems, one can use `--minimize=False` to reduce compilation
-times or make Jupyter Lab build runtime bundles at all.
-
-jupyter_bokeh is automatically installed in Jupyter Notebook. In case of a non-standard
-setup, one can install the extensions with:
-
-```bash
-jupyter nbextension install --sys-prefix --symlink --py jupyter_bokeh
-jupyter nbextension enable jupyter_bokeh --py --sys-prefix
 ```
 
 ## Compatibility
@@ -53,41 +54,48 @@ installation may refer to the below table.
 | 0.35.x        | 0.6.3            |
 | 1.0.x         | 1.0.0            |
 | 2.0.x         | 2.0.0            |
+| 3.0.x         | 3.0.0            |
 
-## Development
+## Contributing
 
-For a development install (requires npm version 6 or later), do the following in the repository directory:
+### Development install
 
-```bash
-npm install
-jupyter labextension link .
-```
+Note: You will need NodeJS to build the extension package.
 
-To rebuild the package and the JupyterLab app:
-
-```bash
-npm run build
-jupyter lab build
-```
-
-To incrementally rebuild the extension and JupyterLab after changes you can run
+The `jlpm` command is JupyterLab's pinned version of
+[yarn](https://yarnpkg.com/) that is installed with JupyterLab. You may use
+`yarn` or `npm` in lieu of `jlpm` below.
 
 ```bash
-npm run watch
+# Clone the repo to your local environment
+# Change directory to the jupyter_bokeh directory
+# Install package in development mode
+pip install -e .
+# Link your development version of the extension with JupyterLab
+jupyter labextension develop . --overwrite
+# Rebuild extension Typescript source after making changes
+jlpm run build
 ```
 
-and in another terminal run
+You can watch the source directory and run JupyterLab at the same time in different terminals to watch for changes in the extension's source and automatically rebuild the extension.
 
 ```bash
-jupyter lab --watch
+# Watch the source directory in one terminal, automatically rebuilding when needed
+jlpm run watch
+# Run JupyterLab in another terminal
+jupyter lab
 ```
 
-When making a new release for compatibility with a new JupyterLab minor release series, please make a minor
-release bump in this extension (i.e. 0.6.3 -> 0.7.0). Conversely, when creating a release for a new feature or bug fix,
-please make a micro release bump (i.e. 0.6.3 -> 0.6.4).
+With the watch command running, every saved change will immediately be built locally and available in your running JupyterLab. Refresh JupyterLab to load the change in your browser (you may need to wait several seconds for the extension to be rebuilt).
 
-## Testing
+By default, the `jlpm run build` command generates the source maps for this extension to make it easier to debug using the browser dev tools. To also generate source maps for the JupyterLab core extensions, you can run the following command:
 
-There is a directory named ``examples`` which contains a collection of notebooks that cover the various ``jupyter_bokeh``
-functionalities. If you update the extension for new JupyterLab releases, please manually execute each and check that the
-expected behavior occurs. If you extend the ``jupyter_bokeh``, please add a new notebook that covers the new functionality.
+```bash
+jupyter lab build --minimize=False
+```
+
+### Uninstall
+
+```bash
+pip uninstall jupyter_bokeh
+```
