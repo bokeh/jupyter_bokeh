@@ -19,6 +19,9 @@ extra:
 
 requirements:
   build:
+    - jupyter-packaging
+    - jupyterlab
+    - notebook
     - python
     - setuptools
     - nodejs >=10.13.0
