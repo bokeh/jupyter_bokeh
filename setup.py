@@ -19,7 +19,7 @@ HERE = Path(__file__).parent.resolve()
 name = "jupyter_bokeh"
 
 lab_path = (HERE / name / "labextension")
-nb_path = (HERE / name / "nbextension" / "static")
+nb_path = (HERE / name / "nbextension")
 
 # Representative files that should exist after a successful build
 jstargets = [
@@ -35,8 +35,8 @@ labext_name = "jupyter_bokeh"
 
 data_files_spec = [
     ("share/jupyter/labextensions/%s" % labext_name, str(lab_path), "**"),
-    ("share/jupyter/labextensions/%s/static" % labext_name, str(HERE), "install.json"),
-    ("share/jupyter/nbextensions/%s/static" % labext_name, str(nb_path), '**'),
+    ("share/jupyter/labextensions/%s" % labext_name, str(HERE), "install.json"),
+    ("share/jupyter/nbextensions/%s" % labext_name, str(nb_path), '**'),
     ("etc/jupyter/nbconfig/notebook.d", str(HERE), "jupyter_bokeh.json")
 ]
 
