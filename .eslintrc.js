@@ -13,7 +13,7 @@ module.exports = {
   plugins: ['@typescript-eslint'],
   rules: {
     '@typescript-eslint/naming-convention': [
-      'error',
+      'warn',
       {
         'selector': 'interface',
         'format': ['PascalCase'],
@@ -33,7 +33,8 @@ module.exports = {
       { avoidEscape: true, allowTemplateLiterals: false }
     ],
     curly: ['error', 'all'],
-    eqeqeq: 'error',
+    semi: ['warn', 'never'],
+    eqeqeq: 'warn',
     'prefer-arrow-callback': 'error'
   }
 };

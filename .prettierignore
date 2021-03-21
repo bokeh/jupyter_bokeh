@@ -3,3 +3,4 @@ node_modules
 **/lib
 **/package.json
 jupyter_bokeh
+src/extension.ts

@@ -1,5 +1,5 @@
-import {IDisposable} from "@lumino/disposable"
-import {DocumentRegistry} from "@jupyterlab/docregistry"
+import { IDisposable } from '@lumino/disposable'
+import { DocumentRegistry } from '@jupyterlab/docregistry'
 
 /**
  * A micro manager that contains the document context
@@ -16,10 +16,11 @@ export class ContextManager implements IDisposable {
   }
 
   get context(): Context {
-    if (this._context != null)
+    if (this._context != null) {
       return this._context
-    else
-      throw new Error("context was already disposed")
+    } else {
+      throw new Error('context was already disposed')
+    }
   }
 
   get isDisposed(): boolean {
@@ -27,8 +28,9 @@ export class ContextManager implements IDisposable {
   }
 
   dispose(): void {
-    if (this.isDisposed)
+    if (this.isDisposed) {
       return
+    }
     this._context = null
   }
 }
