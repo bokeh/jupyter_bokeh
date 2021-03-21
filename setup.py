@@ -31,7 +31,7 @@ package_data_spec = {
     name: ["*"],
 }
 
-labext_name = "jupyter_bokeh"
+labext_name = "@bokeh/jupyter_bokeh"
 
 data_files_spec = [
     ("share/jupyter/labextensions/%s" % labext_name, str(lab_path), "**"),

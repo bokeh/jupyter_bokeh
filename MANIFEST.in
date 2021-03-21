@@ -8,8 +8,7 @@ include install.json
 include ts*.json
 include yarn.lock
 
-recursive-include jupyter_bokeh/nbextension/static *.js *.js.map *.d.ts
-
+recursive-include jupyter_bokeh/nbextension/ *.js *.js.map *.d.ts
 graft jupyter_bokeh/labextension
 
 # Javascript files

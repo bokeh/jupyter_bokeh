@@ -21,8 +21,6 @@ jobs:
       with:
         python-version: '3.7'
         architecture: 'x64'
-    
-    
     - name: Setup pip cache
       uses: actions/cache@v2
       with:
@@ -52,5 +50,5 @@ jobs:
         jlpm run eslint:check
         python -m pip install .
 
-        jupyter labextension list 2>&1 | grep -ie "jupyter_bokeh.*OK"
+        jupyter labextension list 2>&1 | grep -ie "@bokeh/jupyter_bokeh.*OK"
         python -m jupyterlab.browser_check
