@@ -19,7 +19,7 @@ HERE = Path(__file__).parent.resolve()
 name = "jupyter_bokeh"
 
 lab_path = (HERE / name / "labextension")
-nb_path = (HERE / name / "nbextension")
+nb_path = (HERE / name / "nbextension" / "static")
 
 # Representative files that should exist after a successful build
 jstargets = [

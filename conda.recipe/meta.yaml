@@ -25,7 +25,9 @@ requirements:
   run:
     - python
     - bokeh >=2.0.0
-    - ipywidgets >=7.0.0
+    - ipywidgets >=7.5.0
+  run_constrained:
+    - jupyterlab >=3.0.0,<4
 
 test:
   imports:
