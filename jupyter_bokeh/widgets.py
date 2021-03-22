@@ -1,5 +1,5 @@
 #-----------------------------------------------------------------------------
-# Copyright (c) 2012 - 2020, Anaconda, Inc., and Bokeh Contributors.
+# Copyright (c) 2012 - 2021, Anaconda, Inc., and Bokeh Contributors.
 # All rights reserved.
 #
 # The full license is in the file LICENSE.txt, distributed with this software.
@@ -31,6 +31,8 @@ from bokeh.models import LayoutDOM
 from bokeh.protocol import Protocol
 from bokeh.util.dependencies import import_optional
 
+from ._version import __version__
+
 #-----------------------------------------------------------------------------
 # Globals and constants
 #-----------------------------------------------------------------------------
@@ -40,7 +42,7 @@ __all__ = (
 )
 
 _module_name = "@bokeh/jupyter_bokeh"
-_module_version = "^2.0.4"
+_module_version = "^" + str(__version__)
 
 #-----------------------------------------------------------------------------
 # General API

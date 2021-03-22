@@ -19,7 +19,7 @@ module.exports = [
     entry: "./lib/extension.js",
     output: {
       filename: "index.js",
-      path: path.resolve(__dirname, "jupyter_bokeh", "nbextension", "static"),
+      path: path.resolve(__dirname, "jupyter_bokeh", "nbextension"),
       libraryTarget: "amd",
     },
     externals,
