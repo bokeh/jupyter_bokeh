@@ -37,7 +37,7 @@ jupyter labextension install @bokeh/jupyter_bokeh@x.y.x
 
 ## Compatibility
 
-The core [Bokeh](https://github.com/bokeh/bokeh) library is generally version ndependent of
+The core [Bokeh](https://github.com/bokeh/bokeh) library is generally version independent of
 [JupyterLab](https://github.com/jupyterlab/jupyterlab) and this ``jupyter_bokeh`` extension
 for versions of ``bokeh>=2.0.0``.
 
