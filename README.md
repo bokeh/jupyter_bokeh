@@ -7,7 +7,8 @@ A Jupyter extension for rendering [Bokeh](https://bokeh.org) content within Jupy
 
 ## Install
 
-To install the latest version in Jupyter Lab:
+For versions 3.0 and newer of JupyterLab, you have the option to install
+jupyter_bokeh with either ``pip`` or ``conda``:
 
 ```bash
 pip install jupyter_bokeh
@@ -15,11 +16,11 @@ pip install jupyter_bokeh
 
 or
 
-```
+```bash
 conda install -c bokeh jupyter_bokeh
 ```
 
-For versions of Jupyter Lab <3.0 you must install the labextension
+For versions of Jupyter Lab older than 3.0, you must install the labextension
 separately:
 
 ```bash
@@ -41,7 +42,7 @@ The core [Bokeh](https://github.com/bokeh/bokeh) library is generally version in
 for versions of ``bokeh>=2.0.0``.
 
 Our goal is that ``jupyter_bokeh`` minor releases (using the [SemVer](https://semver.org/) pattern) are
-made to follow JupyterLab minor release bumps and micro releases are for new ``jupyter_bokeh`` features
+made to follow JupyterLab minor release bumps, while micro releases are for new ``jupyter_bokeh`` features
 or bug fix releases. We've been previously inconsistent with having the extension release minor version bumps
 track that of JupyterLab, so users seeking to find extension releases that are compatible with their JupyterLab
 installation may refer to the below table.
