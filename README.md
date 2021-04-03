@@ -17,14 +17,14 @@ pip install jupyter_bokeh
 or
 
 ```bash
-conda install -c bokeh jupyter_bokeh
+conda install -c conda-forge jupyter_bokeh
 ```
 
 For versions of Jupyter Lab older than 3.0, you must install the labextension
 separately:
 
 ```bash
-conda install -c bokeh jupyter_bokeh
+conda install -c conda-forge jupyter_bokeh
 jupyter labextension install @jupyter-widgets/jupyterlab-manager
 jupyter labextension install @bokeh/jupyter_bokeh
 ```
