@@ -1,6 +1,6 @@
 {
   "name": "@bokeh/jupyter_bokeh",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "A Jupyter extension for rendering Bokeh content.",
   "keywords": [
     "jupyter",
@@ -17,7 +17,7 @@
     "email": "info@bokeh.org"
   },
   "files": [
-    "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
+    "{dist,lib}/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
     "style/**/*.{css,.js,eot,gif,html,jpg,json,png,svg,woff2,ttf}"
   ],
   "main": "lib/index.js",
