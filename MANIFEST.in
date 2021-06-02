@@ -1,4 +1,4 @@
-include LICENSE
+include LICENSE.txt
 include README.md
 include pyproject.toml
 include jupyter-config/jupyter_bokeh.json
