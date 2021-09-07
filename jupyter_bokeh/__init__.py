@@ -6,6 +6,7 @@ from ._version import __version__
 
 HERE = Path(__file__).parent.resolve()
 
+from .widgets import BokehModel
 with (HERE / "labextension" / "package.json").open() as fid:
     data = json.load(fid)
 
