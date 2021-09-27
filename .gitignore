@@ -5,3 +5,7 @@
 /*.egg-info/
 /*.tgz
 .ipynb_checkpoints/
+/tsconfig.tsbuildinfo
+/jupyter_bokeh/labextension/
+/jupyter_bokeh/nbextension/index.js
+/jupyter_bokeh/nbextension/index.js.map
