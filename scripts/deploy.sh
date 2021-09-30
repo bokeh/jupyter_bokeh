@@ -3,18 +3,12 @@
 set -e
 set -x
 
-if [[ $(jq '.version' package.json) =~ "dev" ]];
-then
-    echo "dev build"
-    exit 1
-fi
-
 git clean -dfx
 npm install
 npm publish --access public # token is configured in ~/.npmrc; requires OTP
 
 git clean -dfx
-python setup.py build_js sdist
+python setup.py sdist
 twine upload -u __token__ -p $(cat ~/.tokens/pypi_jupyter_bokeh) dist/jupyter_bokeh-*.tar.gz
 
 git clean -dfx
