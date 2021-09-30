@@ -74,7 +74,7 @@ setup_args = dict(
     cmdclass=cmdclass,
     packages=setuptools.find_packages(),
     install_requires=[
-        "bokeh >=2.0.0",
+        "bokeh >=2.4.0",
         "ipywidgets >=7.6.0"
     ],
     zip_safe=False,
