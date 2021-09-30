@@ -72,6 +72,7 @@ class BokehModel(DOMWidget):
         self.on_msg(self._sync_model)
 
     def close(self):
+        super().close()
         if self._document is not None:
             self._document.remove_on_change(self)
 
@@ -126,13 +127,13 @@ class BokehModel(DOMWidget):
             submodel = self._model.select_one({"id": content["id"]})
             descriptor = submodel.lookup(content['attr'])
             try:
-                descriptor._real_set(submodel, old, new, hint=hint, setter=self)
+                descriptor._set(submodel, old, new, hint=hint, setter=self)
             except Exception:
                 return
             for cb in submodel._callbacks.get(attr, []):
                 cb(attr, old, new)
         elif kind == 'MessageSent':
-            self._document.apply_json_event(content["msg_data"])
+            self._document.callbacks.trigger_json_event(content["msg_data"])
 
 #-----------------------------------------------------------------------------
 # Dev API
