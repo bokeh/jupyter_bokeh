@@ -75,7 +75,7 @@ class BokehModel(DOMWidget):
         super().close()
         if self._document is not None:
             self._document.remove_on_change(self)
-            
+
     @classmethod
     def _model_to_traits(cls, model):
         if model.document is None:
