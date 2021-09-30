@@ -61,8 +61,6 @@ class BokehModel(DOMWidget):
     combine_events = Bool(False).tag(sync=True)
     render_bundle = Dict().tag(sync=True, to_json=lambda obj, _: serialize_json(obj))
 
-    _debug = []
-    
     @property
     def _document(self):
         return self._model.document
@@ -77,11 +75,6 @@ class BokehModel(DOMWidget):
         super().close()
         if self._document is not None:
             self._document.remove_on_change(self)
-
-    @staticmethod
-    def handle_comm_opened(comm, msg):
-        BokehModel._debug.append(msg)
-        DOMWidget.handle_comm_opened(comm, msg)
             
     @classmethod
     def _model_to_traits(cls, model):
@@ -114,7 +107,6 @@ class BokehModel(DOMWidget):
             self.send({"msg": "patch"}, [buffer])
 
     def _sync_model(self, _, content, _buffers):
-        print(content)
         if content.get("event", "") != "jsevent":
             return
         kind = content.get("kind")
@@ -136,13 +128,11 @@ class BokehModel(DOMWidget):
             descriptor = submodel.lookup(content['attr'])
             try:
                 descriptor._set(submodel, old, new, hint=hint, setter=self)
-            except Exception as e:
-                print(e)
+            except Exception:
                 return
             for cb in submodel._callbacks.get(attr, []):
                 cb(attr, old, new)
         elif kind == 'MessageSent':
-            print(content)
             self._document.callbacks.trigger_json_event(content["msg_data"])
 
 #-----------------------------------------------------------------------------
