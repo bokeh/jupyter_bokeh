@@ -17,7 +17,7 @@ type DocumentChangedEvent = any
 type Receiver = any
 type Fragment = any
 
-const { keys, values } = Object as any
+const { keys, values } = Object
 
 const version_range = `^${version}`
 
@@ -38,8 +38,6 @@ export interface ModelChanged extends DocumentChanged {
   id: string
   new: unknown
   attr: string
-  old: unknown
-  hint: unknown
 }
 
 export interface MessageSent extends DocumentChanged {
@@ -56,7 +54,7 @@ export interface MessageSent extends DocumentChanged {
 }
 
 export class BokehModel extends DOMWidgetModel {
-  defaults() {
+  defaults(): any {
     return {
       ...super.defaults(),
 
@@ -200,52 +198,11 @@ export class BokehView extends DOMWidgetView {
     if (this._blocked) {
       return
     }
-    const { ModelChangedEvent, MessageSentEvent } = bk_require(
-      'document/events'
-    )
-    if (event instanceof ModelChangedEvent) {
-      const js_msg: ModelChanged = {
-        event: 'jsevent',
-        kind: 'ModelChanged',
-        id: event.model.id,
-        attr: event.attr,
-        new: event.new_,
-        old: event.old,
-        hint: null
-      }
-      if (event.hint != null) {
-        if (event.hint.patches != null) {
-          js_msg['hint'] = {
-            column_source: event.hint.column_source,
-            patches: event.hint.patches
-          }
-        } else if (event.hint.data != null) {
-          js_msg['hint'] = {
-            column_source: event.hint.column_source,
-            data: event.hint.data,
-            rollover: event.hint.rollover
-          }
-        }
-      }
-      this._send(js_msg)
-    } else if (
-      event instanceof MessageSentEvent &&
-      event.msg_type == 'bokeh_event'
-    ) {
-      const msg_data = { ...event.msg_data }
-      const event_values = { ...msg_data.event_values }
-      if (event_values.model != null) {
-        event_values['model'] = { id: event_values.model.id }
-      }
-      msg_data['event_values'] = event_values
-      const js_msg: MessageSent = {
-        event: 'jsevent',
-        kind: 'MessageSent',
-        msg_type: event.msg_type,
-        msg_data: msg_data
-      }
-      this._send(js_msg)
-    }
+    const { Serializer } = bk_require('core/serialization')
+    const serializer = new Serializer()
+    const event_rep = serializer.encode(event)
+    event_rep.event = 'jsevent'
+    this._send(event_rep)
   }
 
   protected _consume_patch(
