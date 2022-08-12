@@ -81,7 +81,7 @@ class BokehModel(DOMWidget):
         if model.document is None:
             document = Document()
             document.add_root(model)
-        (docs_json, [render_item]) = standalone_docs_json_and_render_items([model], True)
+        (docs_json, [render_item]) = standalone_docs_json_and_render_items([model], suppress_callback_warning=True)
         render_bundle = dict(
             docs_json=docs_json,
             render_items=[render_item.to_json()],
