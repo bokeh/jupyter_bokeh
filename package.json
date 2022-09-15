@@ -1,6 +1,6 @@
 {
   "name": "@bokeh/jupyter_bokeh",
-  "version": "3.0.4",
+  "version": "3.0.5",
   "description": "A Jupyter extension for rendering Bokeh content.",
   "keywords": [
     "jupyter",
@@ -47,7 +47,7 @@
     "watch:labextension": "jupyter labextension watch ."
   },
   "dependencies": {
-    "@jupyter-widgets/base": "^3 || ^4.0.0",
+    "@jupyter-widgets/base": "^6",
     "@jupyterlab/application": "^3.0.6",
     "@jupyterlab/apputils": "^3.0.5",
     "@jupyterlab/docregistry": "^3.0.6",
