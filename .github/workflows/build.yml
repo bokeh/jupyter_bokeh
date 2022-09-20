@@ -19,15 +19,15 @@ jobs:
     - name: Install Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.7'
+        python-version: '3.8'
         architecture: 'x64'
     - name: Setup pip cache
       uses: actions/cache@v2
       with:
         path: ~/.cache/pip
-        key: pip-3.7-${{ hashFiles('package.json') }}
+        key: pip-3.8-${{ hashFiles('package.json') }}
         restore-keys: |
-          pip-3.7-
+          pip-3.8-
           pip-
 
     - name: Get yarn cache directory path
