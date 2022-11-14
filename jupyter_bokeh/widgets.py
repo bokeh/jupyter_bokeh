@@ -130,8 +130,8 @@ class BokehModel(DOMWidget):
                 descriptor._set(submodel, old, new, hint=hint, setter=self)
             except Exception:
                 return
-            for cb in submodel._callbacks.get(attr, []):
-                cb(attr, old, new)
+#            for cb in submodel._callbacks.get(attr, []):
+#                cb(attr, old, new)
         elif kind == 'MessageSent':
             self._document.callbacks.trigger_json_event(content["msg_data"])
 
