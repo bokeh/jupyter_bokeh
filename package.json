@@ -32,7 +32,7 @@
     "build:prod": "jlpm run build:lib && jlpm run build:nbextension && jlpm run build:labextension",
     "build:labextension": "jupyter labextension build .",
     "build:labextension:dev": "jupyter labextension build --development True .",
-    "build:nbextension": "webpack -p",
+    "build:nbextension": "webpack --mode=production",
     "build:lib": "tsc",
     "clean": "jlpm run clean:lib",
     "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
