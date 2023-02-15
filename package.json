@@ -74,6 +74,12 @@
   ],
   "styleModule": "style/index.js",
   "jupyterlab": {
+    "sharedPackages": {
+      "@jupyter-widgets/base": {
+        "bundled": false,
+        "singleton": true
+      }
+    },
     "extension": true,
     "outputDir": "jupyter_bokeh/labextension"
   }
