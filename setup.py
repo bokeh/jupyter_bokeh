@@ -4,6 +4,7 @@ jupyter_bokeh setup
 import json
 import os
 from pathlib import Path
+from subprocess import check_output
 
 from jupyter_packaging import (
     create_cmdclass,
@@ -16,7 +17,10 @@ import setuptools
 
 # For working with NodeJS >= 17
 # See: https://stackoverflow.com/questions/69394632
-os.environ["NODE_OPTIONS"] = "--openssl-legacy-provider"
+node_version = check_output(["node", "--version"]).decode().strip().lstrip("v")
+node_major = int(node_version.split(".")[0])
+if node_major >= 17:
+    os.environ["NODE_OPTIONS"] = "--openssl-legacy-provider"
 
 HERE = Path(__file__).parent.resolve()
 
