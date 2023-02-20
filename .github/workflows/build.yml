@@ -42,7 +42,7 @@ jobs:
       id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
       with:
         path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-        key: yarn-${{ hashFiles('**/yarn.lock') }}
+        key: yarn-${{ hashFiles('**/yarn.lock') }}-${{ matrix.node-version }}
         restore-keys: |
           yarn-
 
