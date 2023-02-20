@@ -2,6 +2,7 @@
 jupyter_bokeh setup
 """
 import json
+import os
 from pathlib import Path
 
 from jupyter_packaging import (
@@ -12,6 +13,10 @@ from jupyter_packaging import (
     skip_if_exists
 )
 import setuptools
+
+# For working with NodeJS >= 17
+# See: https://stackoverflow.com/questions/69394632
+os.environ["NODE_OPTIONS"] = "--openssl-legacy-provider"
 
 HERE = Path(__file__).parent.resolve()
 
