@@ -13,9 +13,11 @@ and performs bi-directional syncing just like bokeh server does.
 #-----------------------------------------------------------------------------
 # Boilerplate
 #-----------------------------------------------------------------------------
+from __future__ import annotations
 
 # Standard library imports
 import json
+from typing import TYPE_CHECKING, Any, TypedDict
 
 # External imports
 from ipywidgets import DOMWidget
@@ -33,6 +35,12 @@ from bokeh.util.dependencies import import_optional
 
 from ._version import __version__
 
+if TYPE_CHECKING:
+    from bokeh.core.types import ID
+    from bokeh.document.events import DocumentPatchedEvent
+    from bokeh.document.json import DocJson
+    from bokeh.model import Model
+
 #-----------------------------------------------------------------------------
 # Globals and constants
 #-----------------------------------------------------------------------------
@@ -48,6 +56,12 @@ _module_version = "^" + str(__version__)
 # General API
 #-----------------------------------------------------------------------------
 
+class RenderBundle(TypedDict):
+
+    docs_json: dict[ID, DocJson]
+    render_items: list[dict[str, Any]] # TODO: list[RenderItemJson]
+    div: str
+
 class BokehModel(DOMWidget):
 
     _model_name = Unicode("BokehModel").tag(sync=True)
@@ -61,40 +75,42 @@ class BokehModel(DOMWidget):
     combine_events = Bool(False).tag(sync=True)
     render_bundle = Dict().tag(sync=True, to_json=lambda obj, _: serialize_json(obj))
 
+    _model: Model
+
     @property
-    def _document(self):
+    def _document(self) -> Document | None:
         return self._model.document
 
-    def __init__(self, model, **kwargs):
+    def __init__(self, model: LayoutDOM, **kwargs: Any) -> None:
         assert isinstance(model, LayoutDOM)
         self.update_from_model(model)
         super(BokehModel, self).__init__(**kwargs)
         self.on_msg(self._sync_model)
 
-    def close(self):
+    def close(self) -> None:
         super().close()
         if self._document is not None:
             self._document.remove_on_change(self)
 
     @classmethod
-    def _model_to_traits(cls, model):
+    def _model_to_traits(cls, model: Model) -> RenderBundle:
         if model.document is None:
             document = Document()
             document.add_root(model)
         (docs_json, [render_item]) = standalone_docs_json_and_render_items([model], suppress_callback_warning=True)
-        render_bundle = dict(
+        render_bundle = RenderBundle(
             docs_json=docs_json,
             render_items=[render_item.to_json()],
             div=div_for_render_item(render_item),
         )
         return render_bundle
 
-    def update_from_model(self, model):
+    def update_from_model(self, model: Model) -> None:
         self._model = model
         self.render_bundle = self._model_to_traits(model)
         self._document.on_change_dispatch_to(self)
 
-    def _document_patched(self, event):
+    def _document_patched(self, event: DocumentPatchedEvent) -> None:
         if event.setter is self:
             return
         msg = Protocol().create("PATCH-DOC", [event])
@@ -106,7 +122,7 @@ class BokehModel(DOMWidget):
             self.send({"msg": "patch", "payload": json.dumps(header)})
             self.send({"msg": "patch"}, [buffer])
 
-    def _sync_model(self, _, content, _buffers):
+    def _sync_model(self, _, content: dict[str, Any], _buffers) -> None:
         if content.get("event", "") != "jsevent":
             return
         kind = content.get("kind")
