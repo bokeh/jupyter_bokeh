@@ -28,10 +28,8 @@ from bokeh.core.json_encoder import serialize_json
 from bokeh.document import Document
 from bokeh.embed.elements import div_for_render_item
 from bokeh.embed.util import standalone_docs_json_and_render_items
-from bokeh.events import Event
 from bokeh.models import LayoutDOM
 from bokeh.protocol import Protocol
-from bokeh.util.dependencies import import_optional
 
 from ._version import __version__
 
