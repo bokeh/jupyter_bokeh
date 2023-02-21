@@ -28,8 +28,10 @@ from bokeh.core.json_encoder import serialize_json
 from bokeh.document import Document
 from bokeh.embed.elements import div_for_render_item
 from bokeh.embed.util import standalone_docs_json_and_render_items
-from bokeh.models import LayoutDOM
+from bokeh.models import ColumnDataSource, LayoutDOM
 from bokeh.protocol import Protocol
+from bokeh.core.serialization import Deserializer, Serialized
+from bokeh.model import Model
 
 from ._version import __version__
 
@@ -37,7 +39,6 @@ if TYPE_CHECKING:
     from bokeh.core.types import ID
     from bokeh.document.events import DocumentPatchedEvent
     from bokeh.document.json import DocJson
-    from bokeh.model import Model
 
 #-----------------------------------------------------------------------------
 # Globals and constants
@@ -116,38 +117,57 @@ class BokehModel(DOMWidget):
         self.send({"msg": "patch", "payload": msg.header_json})
         self.send({"msg": "patch", "payload": msg.metadata_json})
         self.send({"msg": "patch", "payload": msg.content_json})
-        for header, buffer in msg.buffers:
-            self.send({"msg": "patch", "payload": json.dumps(header)})
-            self.send({"msg": "patch"}, [buffer])
+        for buffer in msg.buffers:
+            header = json.dumps(buffer.ref)
+            payload = buffer.to_bytes()
+            self.send({"msg": "patch", "payload": header})
+            self.send({"msg": "patch"}, [payload])
 
-    def _sync_model(self, _, content: dict[str, Any], _buffers) -> None:
+    def _sync_model(self, _model: BokehModel, content: dict[str, Any], _buffers: list[Any]) -> None:
         if content.get("event", "") != "jsevent":
             return
-        kind = content.get("kind")
-        if kind == 'ModelChanged':
-            hint = content.get("hint")
-            if hint:
-                cds = self._model.select_one({"id": hint["column_source"]["id"]})
-                if "patches" in hint:
-                    # Handle ColumnsPatchedEvent
-                    cds.patch(hint["patches"], setter=self)
-                elif "data" in hint:
-                    # Handle ColumnsStreamedEvent
-                    cds._stream(hint["data"], rollover=hint["rollover"], setter=self)
-                return
+        del content["event"]
 
-            # Handle ModelChangedEvent
-            new, old, attr = content["new"], content["old"], content["attr"]
-            submodel = self._model.select_one({"id": content["id"]})
-            descriptor = submodel.lookup(content['attr'])
-            try:
-                descriptor._set(submodel, old, new, hint=hint, setter=self)
-            except Exception:
-                return
-            for cb in submodel._callbacks.get(attr, []):
+        setter: Any = self
+
+        assert self._document is not None
+        deserializer = Deserializer(list(self._document.models), setter=setter)
+        event = deserializer.deserialize(Serialized(content=content, buffers=[]))
+
+        kind = event["kind"]
+        if kind == "ModelChanged":
+            attr = event["attr"]
+            model = event["model"]
+            new = event["new"]
+
+            assert isinstance(model, Model)
+            descriptor = model.lookup(attr)
+
+            # descriptor.set_from_json()
+            new = descriptor.property.prepare_value(model, descriptor.name, new)
+            old = descriptor._get(model)
+            descriptor._set(model, old, new, setter=setter)
+
+            for cb in model._callbacks.get(attr, []):
                 cb(attr, old, new)
-        elif kind == 'MessageSent':
-            self._document.callbacks.trigger_event(content["msg_data"])
+        elif kind == "ColumnsStreamed":
+            model = content["model"]
+            data = content["data"]
+            rollover = content["rollover"]
+
+            assert isinstance(model, ColumnDataSource)
+            model._stream(data, rollover, setter=setter)
+        elif kind == "ColumnsPatched":
+            model = content["model"]
+            patches = content["data"]
+
+            assert isinstance(model, ColumnDataSource)
+            model.patch(patches, setter=setter)
+        elif kind == "MessageSent":
+            msg_type = event["msg_type"]
+            msg_data = event["msg_data"]
+            if msg_type == "bokeh_event":
+                self._document.callbacks.trigger_event(msg_data)
 
 #-----------------------------------------------------------------------------
 # Dev API
