@@ -147,7 +147,7 @@ class BokehModel(DOMWidget):
             for cb in submodel._callbacks.get(attr, []):
                 cb(attr, old, new)
         elif kind == 'MessageSent':
-            self._document.callbacks.trigger_json_event(content["msg_data"])
+            self._document.callbacks.trigger_event(content["msg_data"])
 
 #-----------------------------------------------------------------------------
 # Dev API
