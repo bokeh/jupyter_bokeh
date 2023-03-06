@@ -9,3 +9,4 @@
 /jupyter_bokeh/labextension/
 /jupyter_bokeh/nbextension/index.js
 /jupyter_bokeh/nbextension/index.js.map
+__pycache__/

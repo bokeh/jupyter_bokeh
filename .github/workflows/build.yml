@@ -11,30 +11,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Install node
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v3
       with:
-       node-version: '16.x'
+       node-version: '18.x'
     - name: Install Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
-        python-version: '3.7'
+        python-version: '3.8'
         architecture: 'x64'
     - name: Setup pip cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/.cache/pip
-        key: pip-3.7-${{ hashFiles('package.json') }}
+        key: pip-3.8-${{ hashFiles('package.json') }}
         restore-keys: |
-          pip-3.7-
+          pip-3.8-
           pip-
 
     - name: Get yarn cache directory path
       id: yarn-cache-dir-path
       run: echo "::set-output name=dir::$(yarn cache dir)"
     - name: Setup yarn cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
       with:
         path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
@@ -43,7 +43,7 @@ jobs:
           yarn-
 
     - name: Install dependencies
-      run: python -m pip install -U jupyterlab~=3.0 jupyter_packaging~=0.7.9
+      run: python -m pip install -U jupyterlab~=3.0 jupyter_packaging~=0.12.3
     - name: Build the extension
       run: |
         jlpm
