@@ -58,6 +58,7 @@
     "style-loader": "^2.0.0"
   },
   "devDependencies": {
+    "@bokeh/bokehjs": "^3.1.0rc.1",
     "@jupyterlab/builder": "^3.0.0",
     "@typescript-eslint/eslint-plugin": "^4.8.1",
     "@typescript-eslint/parser": "^4.8.1",
