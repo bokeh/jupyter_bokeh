@@ -27,7 +27,7 @@ requirements:
     - nodejs >=18.0
   run:
     - python
-    - bokeh 2.4.*,3.*
+    - bokeh 3.*
     - ipywidgets 8.*
   run_constrained:
     - jupyterlab 3.*
