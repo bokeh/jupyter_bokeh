@@ -19,7 +19,12 @@
     "strict": true,
     "strictNullChecks": false,
     "target": "es2017",
-    "types": []
+    "types": [],
+    "paths": {
+      "@bokeh/bokehjs/*": [
+        "./node_modules/@bokeh/bokehjs/build/js/lib/*"
+      ]
+    }
   },
   "include": ["src/*"]
 }

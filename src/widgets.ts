@@ -1,60 +1,43 @@
-import { DOMWidgetModel, DOMWidgetView } from '@jupyter-widgets/base'
+import {DOMWidgetModel, DOMWidgetView} from "@jupyter-widgets/base"
 
-//import {Document, DocumentChangedEvent, ModelChangedEvent} from "document"
-//import {Receiver, Fragment} from "protocol/receiver"
-//import {keys, values} from "core/util/object"
+// Use only `import type`, so that all imports are erased at run time
+import type {Document, DocJson, Patch, DocumentChangedEvent} from "@bokeh/bokehjs/document"
+import type {DocumentChanged} from "@bokeh/bokehjs/document/events"
+import type {Receiver, Fragment} from "@bokeh/bokehjs/protocol/receiver"
+import type {RenderItem} from "@bokeh/bokehjs/embed/json"
+import type {Serializer} from "@bokeh/bokehjs/core/serialization"
+import type {add_document_standalone} from "@bokeh/bokehjs/embed/standalone"
 
-import { name, version } from './metadata'
+import {name, version} from './metadata'
 
-function bk_require(name: string): any {
-  return (window as any).Bokeh.require(name)
+declare const Bokeh: {require(name: string): unknown}
+
+function bk_require<T>(name: string): T {
+  return Bokeh.require(name) as T
 }
 
-type DocsJson = any
-type RenderItem = any
-type Document = any
-type DocumentChangedEvent = any
-type Receiver = any
-type Fragment = any
+declare const Jupyter: {notebook?: unknown}
 
-const { keys, values } = Object
+declare function require(name: string): unknown
+
+const {keys, values} = Object
 
 const version_range = `^${version}`
 
 export type RenderBundle = {
-  docs_json: DocsJson
+  docs_json: DocJson[]
   render_items: RenderItem[]
   div: string
 }
 
-export interface DocumentChanged {
-  event: 'jsevent'
-  kind: string
+/*
+declare interface DocumentChanged {
+  event: "jsevent"
 }
-
-export interface ModelChanged extends DocumentChanged {
-  event: 'jsevent'
-  kind: 'ModelChanged'
-  id: string
-  new: unknown
-  attr: string
-}
-
-export interface MessageSent extends DocumentChanged {
-  event: 'jsevent'
-  kind: 'MessageSent'
-  msg_data: {
-    event_name: string
-    event_values: {
-      model: { id: string }
-      [other: string]: any
-    }
-  }
-  msg_type: string
-}
+*/
 
 export class BokehModel extends DOMWidgetModel {
-  defaults(): any {
+  defaults(): {[key: string]: unknown} {
     return {
       ...super.defaults(),
 
@@ -67,7 +50,7 @@ export class BokehModel extends DOMWidgetModel {
       _view_module_version: version_range,
 
       combine_events: false,
-      render_bundle: {}
+      render_bundle: {},
     }
   }
 
@@ -80,7 +63,7 @@ export class BokehView extends DOMWidgetView {
   private _document: Document | null
   private _receiver: Receiver
   private _blocked: boolean
-  private _msgs: any[]
+  private _msgs: DocumentChanged[]
   private _idle: boolean
   private _combine: boolean
 
@@ -91,15 +74,12 @@ export class BokehView extends DOMWidgetView {
     this._idle = true
     this._combine = true
     this._msgs = []
-    const { Receiver } = bk_require('protocol/receiver')
+    const {Receiver} = bk_require('protocol/receiver')
     this._receiver = new Receiver()
     this.model.on('change:render_bundle', () => this.render())
-    if (
-      (window as any).Jupyter != null &&
-      (window as any).Jupyter.notebook != null
-    ) {
+    if (Jupyter?.notebook != null) {
       // Handle classic Jupyter notebook
-      const events = (window as any).require('base/js/events')
+      const events = require('base/js/events')
       events.on('kernel_idle.Kernel', () => this._process_msg())
     } else if ((this.model.widget_manager as any).context != null) {
       // Handle JupyterLab and Voila
@@ -115,15 +95,11 @@ export class BokehView extends DOMWidgetView {
           }
         })
       } else if (this.model.get('combine_events')) {
-        console.warn(
-          'BokehView cannot combine events because Kernel idle status cannot be determined.'
-        )
+        console.warn('BokehView cannot combine events because Kernel idle status cannot be determined.')
         this._combine = false
       }
     } else if (this.model.get('combine_events')) {
-      console.warn(
-        'BokehView cannot combine events because Kernel idle status cannot be determined.'
-      )
+      console.warn('BokehView cannot combine events because Kernel idle status cannot be determined.')
       this._combine = false
     }
     this.listenTo(this.model, 'msg:custom', (content, buffers) =>
@@ -145,23 +121,21 @@ export class BokehView extends DOMWidgetView {
     this.el.innerHTML = div
     const element = this.el.children[0]
     const json = values(docs_json)[0]
-    const { Document } = bk_require('document')
-    const { add_document_standalone } = bk_require('embed/standalone')
-    this._document = Document.from_json(json)
+    const document = bk_require<{Document: typeof Document}>('document')
+    const standalone = bk_require<{add_document_standalone: typeof add_document_standalone}>('embed/standalone')
+    this._document = document.Document.from_json(json)
     for (const item of render_items) {
-      const roots: { [key: string]: Element } = {}
+      const roots: {[key: string]: Element} = {}
       for (const root_id in item.roots) {
         roots[root_id] = element
       }
-      add_document_standalone(this._document, element, roots)
+      standalone.add_document_standalone(this._document, element, roots)
     }
-    this._document.on_change((event: any) => this._change_event(event))
+    this._document.on_change((event) => this._change_event(event))
   }
 
-  _combine_events(
-    new_msg: ModelChanged | MessageSent
-  ): (ModelChanged | MessageSent)[] {
-    const new_msgs = []
+  _combine_events(new_msg: DocumentChanged): DocumentChanged[] {
+    const new_msgs: DocumentChanged[] = []
     for (const msg of this._msgs) {
       if (new_msg.kind != msg.kind) {
         new_msgs.push(msg)
@@ -184,7 +158,7 @@ export class BokehView extends DOMWidgetView {
     return new_msgs
   }
 
-  _send(msg: ModelChanged | MessageSent): void {
+  _send(msg: DocumentChanged): void {
     if (!this._idle && this._combine && this.model.get('combine_events')) {
       // Queue event and drop previous events on same model attribute
       this._msgs = this._combine_events(msg)
@@ -198,17 +172,14 @@ export class BokehView extends DOMWidgetView {
     if (this._blocked) {
       return
     }
-    const { Serializer } = bk_require('core/serialization')
-    const serializer = new Serializer()
-    const event_rep = serializer.encode(event)
-    event_rep.event = 'jsevent'
+    const serialization = bk_require<{Serializer: typeof Serializer}>("core/serialization")
+    const serializer = new serialization.Serializer()
+    const event_rep = serializer.encode(event) as DocumentChanged & {event: "jsevent"}
+    event_rep.event = "jsevent"
     this._send(event_rep)
   }
 
-  protected _consume_patch(
-    content: { msg: 'patch'; payload?: Fragment },
-    buffers: DataView[]
-  ): void {
+  protected _consume_patch(content: {msg: 'patch'; payload?: Fragment}, buffers: DataView[]): void {
     if (this._document == null) {
       return
     }
@@ -219,7 +190,7 @@ export class BokehView extends DOMWidgetView {
       if (comm_msg != null && keys(comm_msg.content).length > 0) {
         this._blocked = true
         try {
-          this._document.apply_json_patch(comm_msg.content, comm_msg.buffers)
+          this._document.apply_json_patch(comm_msg.content as Patch, comm_msg.buffers)
         } finally {
           this._blocked = false
         }
