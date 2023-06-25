@@ -10,3 +10,4 @@
 /jupyter_bokeh/nbextension/index.js
 /jupyter_bokeh/nbextension/index.js.map
 __pycache__/
+/.yarn

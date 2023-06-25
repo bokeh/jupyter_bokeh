@@ -30,7 +30,7 @@ requirements:
     - bokeh 3.*
     - ipywidgets 8.*
   run_constrained:
-    - jupyterlab 3.*
+    - jupyterlab 3.*,4.*
 
 test:
   imports:
