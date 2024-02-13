@@ -11,3 +11,4 @@
 /jupyter_bokeh/nbextension/index.js.map
 __pycache__/
 /.yarn
+/jupyter_bokeh/_version.py
