@@ -95,8 +95,8 @@ export class BokehJSExec extends Widget implements IRenderMime.IRenderer {
       const { _manager } = this
       const kernel_proxy: KernelProxy = {
         registerCommTarget(
-	  targetName: string,
-	  callback: (comm: Kernel.IComm, msg: KernelMessage.ICommOpenMsg) => void
+          targetName: string,
+          callback: (comm: Kernel.IComm, msg: KernelMessage.ICommOpenMsg) => void
 	) {
           const kernel = _manager!.context.sessionContext.session?.kernel
           if (kernel != null) {
