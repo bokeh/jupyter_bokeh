@@ -44,7 +44,6 @@ extra:
   deploy:
     - anaconda-client
     - setuptools
-    - twine
     - jq
   channels:
     - bokeh

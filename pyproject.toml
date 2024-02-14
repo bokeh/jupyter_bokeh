@@ -39,9 +39,6 @@ tests = ['flake8', 'pytest']
 build = [
     'setuptools>=40.8.0',
     'jupyterlab ~=4.0',
-    'twine',
-    'rfc3986',
-    'keyring'
 ]
 all = ["jupyter_bokeh[tests]", "jupyter_bokeh[build]"]
 
