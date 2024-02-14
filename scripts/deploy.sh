@@ -12,9 +12,6 @@ git clean -dfx
 hatch build
 hatch publish -u __token__ -a $(cat ~/.tokens/pypi_jupyter_bokeh)
 
-VERSION=$(find dist -name "*.whl" -exec basename {} \; | cut -d- -f2)
-export VERSION
-
-conda build conda.recipe
+VERSION=`hatch version` conda build conda.recipe
 PKG=$(conda build conda.recipe --output)
 anaconda --token ~/.tokens/anaconda upload -u bokeh -l dev -l main $PKG
