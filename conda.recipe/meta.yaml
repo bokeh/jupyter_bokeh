@@ -1,21 +1,20 @@
-{% set data = load_setup_py_data() %}
+{% set pyproject = load_file_data('../pyproject.toml', from_recipe_dir=True) %}
+{% set pkgjson = load_file_data('../package.json', from_recipe_dir=True) %}
+{% set project = pyproject['project'] %}
+
+{% set name = project['name'] %}
+{% set version = VERSION %}
 
 package:
-  name: jupyter_bokeh
-  version: {{ data["version"] }}
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  path: ..
+  url: ../dist/{{ name }}-{{ version }}-py3-none-any.whl
 
 build:
   noarch: python
-  number: 0
-  script: python setup.py install --single-version-externally-managed --record record.txt
-
-extra:
-  channels:
-    - bokeh
-    - conda-forge
+  script: {{ PYTHON }} -m pip install -vv {{ name }}-{{ version }}-py3-none-any.whl
 
 requirements:
   build:
@@ -25,25 +24,28 @@ requirements:
     - python
     - setuptools
     - nodejs >=18.0
+    - hatch
   run:
     - python
     - bokeh 3.*
     - ipywidgets 8.*
   run_constrained:
-    - jupyterlab 3.*
+    - jupyterlab 4.*
 
 test:
   imports:
     - jupyter_bokeh
 
 about:
-  home: {{ data["url"] }}
-  license: {{ data["license"] }}
-  summary: {{ data["description"] }}
+  home: {{ pkgjson['homepage'] }}
+  license: {{ project['license']['file'] }}
+  summary: {{ pkgjson['description'] }}
 
 extra:
   deploy:
     - anaconda-client
     - setuptools
-    - twine
     - jq
+  channels:
+    - bokeh
+    - conda-forge

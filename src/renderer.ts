@@ -8,7 +8,7 @@ export declare interface KernelProxy {
   // copied from https://github.com/jupyterlab/jupyterlab/blob/master/packages/services/src/kernel/default.ts#L605
   registerCommTarget(
     targetName: string,
-    callback: (comm: Kernel.IComm, msg: KernelMessage.ICommOpenMsg) => void
+    callback: (comm: Kernel.IComm, msg: KernelMessage.ICommOpenMsg) => Promise<void>
   ): void
 }
 
@@ -94,7 +94,10 @@ export class BokehJSExec extends Widget implements IRenderMime.IRenderer {
       this._document_id = metadata.id as string
       const { _manager } = this
       const kernel_proxy: KernelProxy = {
-        registerCommTarget(targetName, callback) {
+        registerCommTarget(
+          targetName: string,
+          callback: (comm: Kernel.IComm, msg: KernelMessage.ICommOpenMsg) => void
+	) {
           const kernel = _manager!.context.sessionContext.session?.kernel
           if (kernel != null) {
             kernel.registerCommTarget(targetName, callback)

@@ -4,14 +4,14 @@ set -e
 set -x
 
 git clean -dfx
-npm install
+jlpm install
+jlpm run build:prod
 npm publish --access public # token is configured in ~/.npmrc; requires OTP
 
 git clean -dfx
-python setup.py sdist
-twine upload -u __token__ -p $(cat ~/.tokens/pypi_jupyter_bokeh) dist/jupyter_bokeh-*.tar.gz
+hatch build
+hatch publish -u __token__ -a $(cat ~/.tokens/pypi_jupyter_bokeh)
 
-git clean -dfx
-conda build conda.recipe
+VERSION=`hatch version` conda build conda.recipe
 PKG=$(conda build conda.recipe --output)
 anaconda --token ~/.tokens/anaconda upload -u bokeh -l dev -l main $PKG
