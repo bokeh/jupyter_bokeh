@@ -16,6 +16,8 @@ type Document = any
 type DocumentChangedEvent = any
 type Receiver = any
 type Fragment = any
+type HasProps = any
+type Ref = any
 
 const { keys, values } = Object
 
@@ -199,7 +201,11 @@ export class BokehView extends DOMWidgetView {
       return
     }
     const { Serializer } = bk_require('core/serialization')
-    const serializer = new Serializer()
+    const references: Map<HasProps, Ref> = new Map()
+    for (const model of event.document._all_models.values()) {
+      references.set(model, model.ref())
+    }
+    const serializer = new Serializer({references})
     const event_rep = serializer.encode(event)
     event_rep.event = 'jsevent'
     this._send(event_rep)
