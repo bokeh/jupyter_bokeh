@@ -232,7 +232,7 @@ export class BokehView extends DOMWidgetView {
           this._blocked = false
           const events = [...this._events]
           this._events = []
-          for (const event of this._events) {
+          for (const event of events) {
             this._change_event(event)
           }
         }
