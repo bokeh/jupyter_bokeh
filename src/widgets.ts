@@ -230,11 +230,11 @@ export class BokehView extends DOMWidgetView {
           this._document.apply_json_patch(comm_msg.content, comm_msg.buffers)
         } finally {
           this._blocked = false
-	  const events = [...this._events]
-	  this._events = []
-	  for (const event of this._events) {
-	    this._change_event(event)
-	  }
+          const events = [...this._events]
+          this._events = []
+          for (const event of this._events) {
+            this._change_event(event)
+          }
         }
       }
     }
