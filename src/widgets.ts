@@ -83,6 +83,7 @@ export class BokehView extends DOMWidgetView {
   private _receiver: Receiver
   private _blocked: boolean
   private _msgs: any[]
+  private _events: any[]
   private _idle: boolean
   private _combine: boolean
 
@@ -175,7 +176,7 @@ export class BokehView extends DOMWidgetView {
         if (
           msg.msg_data.event_values.model == null ||
           msg.msg_data.event_values.model.id !=
-            new_msg.msg_data.event_values.model.id ||
+          new_msg.msg_data.event_values.model.id ||
           msg.msg_data.event_name != new_msg.msg_data.event_name
         ) {
           new_msgs.push(msg)
@@ -198,6 +199,7 @@ export class BokehView extends DOMWidgetView {
 
   protected _change_event(event: DocumentChangedEvent): void {
     if (this._blocked) {
+      this._events.push(event)
       return
     }
     const { Serializer } = bk_require('core/serialization')
@@ -228,6 +230,11 @@ export class BokehView extends DOMWidgetView {
           this._document.apply_json_patch(comm_msg.content, comm_msg.buffers)
         } finally {
           this._blocked = false
+	  const events = [...this._events]
+	  this._events = []
+	  for (const event of this._events) {
+	    this._change_event(event)
+	  }
         }
       }
     }
