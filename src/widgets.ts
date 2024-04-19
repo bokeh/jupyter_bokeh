@@ -169,7 +169,7 @@ export class BokehView extends DOMWidgetView {
       if (new_msg.kind != msg.kind) {
         new_msgs.push(msg)
       } else if (msg.kind == 'ModelChanged' && new_msg.kind == 'ModelChanged') {
-        if (msg.id != new_msg.id || msg.attr != new_msg.attr) {
+        if (msg.model.id != new_msg.model.id || msg.attr != new_msg.attr) {
           new_msgs.push(msg)
         }
       } else if (msg.kind == 'MessageSent' && new_msg.kind == 'MessageSent') {
