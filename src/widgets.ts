@@ -17,7 +17,6 @@ type DocumentChangedEvent = any
 type Receiver = any
 type Fragment = any
 type HasProps = any
-type Ref = any
 
 const { keys, values } = Object
 
@@ -29,6 +28,10 @@ export type RenderBundle = {
   div: string
 }
 
+export interface Ref {
+  id: string
+}
+
 export interface DocumentChanged {
   event: 'jsevent'
   kind: string
@@ -37,7 +40,7 @@ export interface DocumentChanged {
 export interface ModelChanged extends DocumentChanged {
   event: 'jsevent'
   kind: 'ModelChanged'
-  id: string
+  model: Ref
   new: unknown
   attr: string
 }
