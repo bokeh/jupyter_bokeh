@@ -17,7 +17,6 @@ type DocumentChangedEvent = any
 type Receiver = any
 type Fragment = any
 type HasProps = any
-type Ref = any
 
 const { keys, values } = Object
 
@@ -29,6 +28,10 @@ export type RenderBundle = {
   div: string
 }
 
+export interface Ref {
+  id: string
+}
+
 export interface DocumentChanged {
   event: 'jsevent'
   kind: string
@@ -37,7 +40,7 @@ export interface DocumentChanged {
 export interface ModelChanged extends DocumentChanged {
   event: 'jsevent'
   kind: 'ModelChanged'
-  id: string
+  model: Ref
   new: unknown
   attr: string
 }
@@ -169,7 +172,7 @@ export class BokehView extends DOMWidgetView {
       if (new_msg.kind != msg.kind) {
         new_msgs.push(msg)
       } else if (msg.kind == 'ModelChanged' && new_msg.kind == 'ModelChanged') {
-        if (msg.id != new_msg.id || msg.attr != new_msg.attr) {
+        if (msg.model.id != new_msg.model.id || msg.attr != new_msg.attr) {
           new_msgs.push(msg)
         }
       } else if (msg.kind == 'MessageSent' && new_msg.kind == 'MessageSent') {
