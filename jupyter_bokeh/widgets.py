@@ -151,15 +151,15 @@ class BokehModel(DOMWidget):
             for cb in model._callbacks.get(attr, []):
                 cb(attr, old, new)
         elif kind == "ColumnsStreamed":
-            model = content["model"]
-            data = content["data"]
-            rollover = content["rollover"]
+            model = event["model"]
+            data = event["data"]
+            rollover = event["rollover"]
 
             assert isinstance(model, ColumnDataSource)
             model._stream(data, rollover, setter=setter)
         elif kind == "ColumnsPatched":
-            model = content["model"]
-            patches = content["data"]
+            model = event["model"]
+            patches = event["patches"]
 
             assert isinstance(model, ColumnDataSource)
             model.patch(patches, setter=setter)
