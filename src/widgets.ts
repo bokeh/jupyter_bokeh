@@ -97,6 +97,7 @@ export class BokehView extends DOMWidgetView {
     this._idle = true
     this._combine = true
     this._msgs = []
+    this._events = []
     const { Receiver } = bk_require('protocol/receiver')
     this._receiver = new Receiver()
     this.model.on('change:render_bundle', () => this.render())
