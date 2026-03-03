@@ -1,9 +1,5 @@
 import { DOMWidgetModel, DOMWidgetView } from '@jupyter-widgets/base'
 
-//import {Document, DocumentChangedEvent, ModelChangedEvent} from "document"
-//import {Receiver, Fragment} from "protocol/receiver"
-//import {keys, values} from "core/util/object"
-
 import { name, version } from './metadata'
 
 function bk_require(name: string): any {
@@ -18,7 +14,7 @@ type Receiver = any
 type Fragment = any
 type HasProps = any
 
-const { keys, values } = Object
+const { values } = Object
 
 const version_range = `^${version}`
 
@@ -86,7 +82,7 @@ export class BokehView extends DOMWidgetView {
   private _receiver: Receiver
   private _blocked: boolean
   private _msgs: any[]
-  private _events: any[]
+  private _pending_events: any[]
   private _idle: boolean
   private _combine: boolean
 
@@ -97,10 +93,12 @@ export class BokehView extends DOMWidgetView {
     this._idle = true
     this._combine = true
     this._msgs = []
-    this._events = []
+    this._pending_events = []
     const { Receiver } = bk_require('protocol/receiver')
     this._receiver = new Receiver()
     this.model.on('change:render_bundle', () => this.render())
+
+    let canDetectIdle = false
     if (
       (window as any).Jupyter != null &&
       (window as any).Jupyter.notebook != null
@@ -108,6 +106,7 @@ export class BokehView extends DOMWidgetView {
       // Handle classic Jupyter notebook
       const events = (window as any).require('base/js/events')
       events.on('kernel_idle.Kernel', () => this._process_msg())
+      canDetectIdle = true
     } else if ((this.model.widget_manager as any).context != null) {
       // Handle JupyterLab and Voila
       const context = (this.model.widget_manager as any).context
@@ -121,25 +120,24 @@ export class BokehView extends DOMWidgetView {
             this._process_msg()
           }
         })
-      } else if (this.model.get('combine_events')) {
-        console.warn(
-          'BokehView cannot combine events because Kernel idle status cannot be determined.'
-        )
-        this._combine = false
+        canDetectIdle = true
       }
-    } else if (this.model.get('combine_events')) {
+    }
+
+    if (!canDetectIdle && this.model.get('combine_events')) {
       console.warn(
         'BokehView cannot combine events because Kernel idle status cannot be determined.'
       )
       this._combine = false
     }
+
     this.listenTo(this.model, 'msg:custom', (content, buffers) =>
       this._consume_patch(content, buffers)
     )
   }
 
-  protected _process_msg(): void {
-    if (this._msgs.length == 0) {
+  private _process_msg(): void {
+    if (this._msgs.length === 0) {
       this._idle = true
       return
     }
@@ -147,6 +145,9 @@ export class BokehView extends DOMWidgetView {
   }
 
   render(): void {
+    if (this._document !== null) {
+      this._document.clear()
+    }
     const bundle = JSON.parse(this.model.get('render_bundle'))
     const { docs_json, render_items, div } = bundle as RenderBundle
     this.el.innerHTML = div
@@ -165,33 +166,30 @@ export class BokehView extends DOMWidgetView {
     this._document.on_change((event: any) => this._change_event(event))
   }
 
-  _combine_events(
+  private _combine_events(
     new_msg: ModelChanged | MessageSent
   ): (ModelChanged | MessageSent)[] {
-    const new_msgs = []
-    for (const msg of this._msgs) {
-      if (new_msg.kind != msg.kind) {
-        new_msgs.push(msg)
-      } else if (msg.kind == 'ModelChanged' && new_msg.kind == 'ModelChanged') {
-        if (msg.model.id != new_msg.model.id || msg.attr != new_msg.attr) {
-          new_msgs.push(msg)
-        }
-      } else if (msg.kind == 'MessageSent' && new_msg.kind == 'MessageSent') {
-        if (
-          msg.msg_data.event_values.model == null ||
-          msg.msg_data.event_values.model.id !=
-          new_msg.msg_data.event_values.model.id ||
-          msg.msg_data.event_name != new_msg.msg_data.event_name
-        ) {
-          new_msgs.push(msg)
-        }
+    const filtered = this._msgs.filter((msg) => {
+      if (new_msg.kind !== msg.kind) {
+        return true
       }
-    }
-    new_msgs.push(new_msg)
-    return new_msgs
+      if (msg.kind === 'ModelChanged' && new_msg.kind === 'ModelChanged') {
+        return msg.model.id !== new_msg.model.id || msg.attr !== new_msg.attr
+      }
+      if (msg.kind === 'MessageSent' && new_msg.kind === 'MessageSent') {
+        return (
+          msg.msg_data.event_values.model == null ||
+          msg.msg_data.event_values.model.id !== new_msg.msg_data.event_values.model.id ||
+          msg.msg_data.event_name !== new_msg.msg_data.event_name
+        )
+      }
+      return true
+    })
+    filtered.push(new_msg)
+    return filtered
   }
 
-  _send(msg: ModelChanged | MessageSent): void {
+  private _send(msg: ModelChanged | MessageSent): void {
     if (!this._idle && this._combine && this.model.get('combine_events')) {
       // Queue event and drop previous events on same model attribute
       this._msgs = this._combine_events(msg)
@@ -201,9 +199,9 @@ export class BokehView extends DOMWidgetView {
     }
   }
 
-  protected _change_event(event: DocumentChangedEvent): void {
+  private _change_event(event: DocumentChangedEvent): void {
     if (this._blocked) {
-      this._events.push(event)
+      this._pending_events.push(event)
       return
     }
     const { Serializer } = bk_require('core/serialization')
@@ -217,25 +215,25 @@ export class BokehView extends DOMWidgetView {
     this._send(event_rep)
   }
 
-  protected _consume_patch(
+  private _consume_patch(
     content: { msg: 'patch'; payload?: Fragment },
     buffers: DataView[]
   ): void {
-    if (this._document == null) {
+    if (this._document === null) {
       return
     }
-    if (content.msg == 'patch') {
+    if (content.msg === 'patch') {
       const { payload } = content
       this._receiver.consume(payload != null ? payload : buffers[0].buffer)
       const comm_msg = this._receiver.message
-      if (comm_msg != null && keys(comm_msg.content).length > 0) {
+      if (comm_msg != null && Object.keys(comm_msg.content).length > 0) {
         this._blocked = true
         try {
           this._document.apply_json_patch(comm_msg.content, comm_msg.buffers)
         } finally {
           this._blocked = false
-          const events = [...this._events]
-          this._events = []
+          const events = [...this._pending_events]
+          this._pending_events = []
           for (const event of events) {
             this._change_event(event)
           }

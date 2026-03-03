@@ -16,7 +16,7 @@ export class ContextManager implements IDisposable {
   }
 
   get context(): Context {
-    if (this._context != null) {
+    if (this._context !== null) {
       return this._context
     } else {
       throw new Error('context was already disposed')
@@ -24,7 +24,7 @@ export class ContextManager implements IDisposable {
   }
 
   get isDisposed(): boolean {
-    return this._context == null
+    return this._context === null
   }
 
   dispose(): void {
