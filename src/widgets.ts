@@ -177,9 +177,12 @@ export class BokehView extends DOMWidgetView {
         return msg.model.id !== new_msg.model.id || msg.attr !== new_msg.attr
       }
       if (msg.kind === 'MessageSent' && new_msg.kind === 'MessageSent') {
+        const msg_model = msg.msg_data.event_values?.model
+        const new_model = new_msg.msg_data.event_values?.model
         return (
-          msg.msg_data.event_values.model == null ||
-          msg.msg_data.event_values.model.id !== new_msg.msg_data.event_values.model.id ||
+          msg_model == null ||
+          new_model == null ||
+          msg_model.id !== new_model.id ||
           msg.msg_data.event_name !== new_msg.msg_data.event_name
         )
       }

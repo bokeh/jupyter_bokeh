@@ -562,7 +562,7 @@
     "@lumino/signaling" "^2.1.5"
     "@lumino/widgets" "^2.7.5"
 
-"@jupyterlab/apputils@^3.0.0 || ^4.0.0", "@jupyterlab/apputils@^4", "@jupyterlab/apputils@^4.6.5":
+"@jupyterlab/apputils@^3.0.0 || ^4.0.0", "@jupyterlab/apputils@^4.6.5":
   version "4.6.5"
   resolved "https://registry.npmjs.org/@jupyterlab/apputils/-/apputils-4.6.5.tgz"
   integrity sha512-r7b+HU0MmqGnCqnOv1Een7lL/bg+1DtKEo84dIry4h5Rc6C2UuLTQAynNEMeHcwK6+BCjTHS6LFCgw2p9wskDQ==
@@ -1059,7 +1059,7 @@
     "@lumino/signaling" "^2.1.5"
     ws "^8.11.0"
 
-"@jupyterlab/settingregistry@^3.0.0 || ^4.0.0", "@jupyterlab/settingregistry@^4", "@jupyterlab/settingregistry@^4.5.5":
+"@jupyterlab/settingregistry@^3.0.0 || ^4.0.0", "@jupyterlab/settingregistry@^4.5.5":
   version "4.5.5"
   resolved "https://registry.npmjs.org/@jupyterlab/settingregistry/-/settingregistry-4.5.5.tgz"
   integrity sha512-fpPUx6/UCN/J+nKCZnYQ9VRd0bN2M4lM0z7h0l3rPKizegoQCDVYUkc2QGaUxcW4DpFnCMFM3QY63jYmq8+vXA==
@@ -1131,7 +1131,7 @@
     "@jupyterlab/statedb" "^4.5.5"
     "@lumino/coreutils" "^2.2.2"
 
-"@jupyterlab/ui-components@^4", "@jupyterlab/ui-components@^4.5.5":
+"@jupyterlab/ui-components@^4.5.5":
   version "4.5.5"
   resolved "https://registry.npmjs.org/@jupyterlab/ui-components/-/ui-components-4.5.5.tgz"
   integrity sha512-NkQ/OY1KiVkjjuax+GoUE0ZyI8lnuR6lhgUGzzkQxmQHte4tvfA57PuNuyq37/gFMwsGBA4bTRfucPuaZACJAA==
