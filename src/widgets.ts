@@ -14,7 +14,7 @@ type Receiver = any
 type Fragment = any
 type HasProps = any
 
-const { values } = Object
+const { keys, values } = Object
 
 const version_range = `^${version}`
 
@@ -229,7 +229,7 @@ export class BokehView extends DOMWidgetView {
       const { payload } = content
       this._receiver.consume(payload != null ? payload : buffers[0].buffer)
       const comm_msg = this._receiver.message
-      if (comm_msg != null && Object.keys(comm_msg.content).length > 0) {
+      if (comm_msg != null && keys(comm_msg.content).length > 0) {
         this._blocked = true
         try {
           this._document.apply_json_patch(comm_msg.content, comm_msg.buffers)
