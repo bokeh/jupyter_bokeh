@@ -83,7 +83,7 @@ class BokehModel(DOMWidget):
     def __init__(self, model: LayoutDOM, **kwargs: Any) -> None:
         assert isinstance(model, LayoutDOM)
         self.update_from_model(model)
-        super(BokehModel, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.on_msg(self._sync_model)
 
     def close(self) -> None:
