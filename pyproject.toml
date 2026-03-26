@@ -49,15 +49,16 @@ source = "nodejs"
 fields = ["description", "authors", "urls"]
 
 [tool.hatch.build.targets.sdist]
-artifacts = ["jupyter_bokeh/labextension"]
+artifacts = ["jupyter_bokeh/labextension", "jupyter_bokeh/nbextension"]
 exclude = [".github", "binder"]
 
 [tool.hatch.build.targets.wheel]
-artifacts = ["jupyter_bokeh/labextension"]
+artifacts = ["jupyter_bokeh/labextension", "jupyter_bokeh/nbextension"]
 
 [tool.hatch.build.targets.wheel.shared-data]
 "jupyter_bokeh/labextension" = "share/jupyter/labextensions/@bokeh/jupyter_bokeh"
 "install.json" = "share/jupyter/labextensions/@bokeh/jupyter_bokeh/install.json"
+"jupyter_bokeh/nbextension" = "share/jupyter/nbextensions/jupyter_bokeh"
 
 [tool.hatch.build.hooks.version]
 path = "jupyter_bokeh/_version.py"
@@ -68,6 +69,7 @@ build-function = "hatch_jupyter_builder.npm_builder"
 ensured-targets = [
     "jupyter_bokeh/labextension/static/style.js",
     "jupyter_bokeh/labextension/package.json",
+    "jupyter_bokeh/nbextension/index.js",
 ]
 skip-if-exists = ["jupyter_bokeh/labextension/static/style.js"]
 
