@@ -37,8 +37,6 @@ function poll(fn: () => boolean, wait = 1000, interval = 100): Promise<void> {
 /**
  * The MIME types for BokehJS.
  */
-const HTML_MIME_TYPE = 'text/html'
-const JS_MIME_TYPE = 'application/javascript'
 export const BOKEHJS_LOAD_MIME_TYPE = 'application/vnd.bokehjs_load.v0+json'
 export const BOKEHJS_EXEC_MIME_TYPE = 'application/vnd.bokehjs_exec.v0+json'
 
@@ -46,7 +44,6 @@ export const BOKEHJS_EXEC_MIME_TYPE = 'application/vnd.bokehjs_exec.v0+json'
  * Load BokehJS and CSS into the DOM
  */
 export class BokehJSLoad extends Widget implements IRenderMime.IRenderer {
-  private _load_mimetype: string = BOKEHJS_LOAD_MIME_TYPE
   private _script_element: HTMLScriptElement
 
   constructor(_options: IRenderMime.IRendererOptions) {
@@ -55,7 +52,7 @@ export class BokehJSLoad extends Widget implements IRenderMime.IRenderer {
   }
 
   renderModel(model: IRenderMime.IMimeModel): Promise<void> {
-    const data = model.data[this._load_mimetype] as string
+    const data = model.data[BOKEHJS_LOAD_MIME_TYPE] as string
     this._script_element.textContent = data
     this.node.appendChild(this._script_element)
 
@@ -68,14 +65,9 @@ export class BokehJSLoad extends Widget implements IRenderMime.IRenderer {
  */
 export class BokehJSExec extends Widget implements IRenderMime.IRenderer {
   private _manager: ContextManager | null
-  // for classic nb compat reasons, the payload in contained in these mime messages
-  private _html_mimetype: string = HTML_MIME_TYPE
-  private _js_mimetype: string = JS_MIME_TYPE
-  // the metadata is stored here
-  private _exec_mimetype: string = BOKEHJS_EXEC_MIME_TYPE
   private _script_element: HTMLScriptElement
-  private _server_id: string | null
-  private _document_id: string | null
+  private _server_id: string | null = null
+  private _document_id: string | null = null
 
   constructor(_options: IRenderMime.IRendererOptions, manager: ContextManager) {
     super()
@@ -84,11 +76,11 @@ export class BokehJSExec extends Widget implements IRenderMime.IRenderer {
   }
 
   async renderModel(model: IRenderMime.IMimeModel): Promise<void> {
-    const metadata = model.metadata[this._exec_mimetype] as ReadonlyJSONObject
+    const metadata = model.metadata[BOKEHJS_EXEC_MIME_TYPE] as ReadonlyJSONObject
 
     if (metadata.id !== undefined) {
       // I'm a static document
-      const data = model.data[this._js_mimetype] as string
+      const data = model.data['application/javascript'] as string
       this._script_element.textContent = data
       await poll(() => typeof Bokeh !== 'undefined')
       this._document_id = metadata.id as string
@@ -97,7 +89,7 @@ export class BokehJSExec extends Widget implements IRenderMime.IRenderer {
         registerCommTarget(
           targetName: string,
           callback: (comm: Kernel.IComm, msg: KernelMessage.ICommOpenMsg) => void
-	) {
+        ) {
           const kernel = _manager!.context.sessionContext.session?.kernel
           if (kernel != null) {
             kernel.registerCommTarget(targetName, callback)
@@ -107,7 +99,7 @@ export class BokehJSExec extends Widget implements IRenderMime.IRenderer {
       Bokeh.embed.kernels[this._document_id] = kernel_proxy
       _manager!.context.sessionContext.statusChanged.connect(
         (_session, status) => {
-          if (status == 'restarting' || status === 'dead') {
+          if (status === 'restarting' || status === 'dead') {
             delete Bokeh.embed.kernels[this._document_id!]
           }
         },
@@ -116,15 +108,12 @@ export class BokehJSExec extends Widget implements IRenderMime.IRenderer {
     } else if (metadata.server_id !== undefined) {
       // I'm a server document
       this._server_id = metadata.server_id as string
-      const data = model.data[this._html_mimetype] as string
+      const data = model.data['text/html'] as string
       const d = document.createElement('div')
       d.innerHTML = data
-      const script_attrs: NamedNodeMap = d.children[0].attributes
-      for (const i in script_attrs) {
-        this._script_element.setAttribute(
-          script_attrs[i].name,
-          script_attrs[i].value
-        )
+      const script_attrs = d.children[0].attributes
+      for (const attr of script_attrs) {
+        this._script_element.setAttribute(attr.name, attr.value)
       }
       this._script_element.textContent = d.textContent
     }

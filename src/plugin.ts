@@ -46,6 +46,7 @@ export class NBWidgetExtension implements INBWidgetExtension {
 
     return new DisposableDelegate(() => {
       if (nb.content.rendermime) {
+        nb.content.rendermime.removeMimeType(BOKEHJS_LOAD_MIME_TYPE)
         nb.content.rendermime.removeMimeType(BOKEHJS_EXEC_MIME_TYPE)
       }
       manager.dispose()
