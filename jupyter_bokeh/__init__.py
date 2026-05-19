@@ -19,7 +19,7 @@ def _jupyter_labextension_paths():
 def _jupyter_nbextension_paths():
     return [{
         "section": "notebook",
-        "src": "nbextension/static",
+        "src": "nbextension",
         "dest": "jupyter_bokeh",
         "require": "jupyter_bokeh/extension",
     }]
