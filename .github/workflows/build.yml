@@ -43,7 +43,9 @@ jobs:
         run: python -m playwright install --with-deps chromium
       - name: Test notebook plot synchronization
         timeout-minutes: 5
-        run: python -m pytest browser_tests -q --basetemp=work/browser-tests
+        run: |
+          mkdir -p work
+          python -m pytest browser_tests -q --basetemp=work/browser-tests
       - name: Upload notebook screenshot on failure
         if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
