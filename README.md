@@ -96,6 +96,31 @@ By default, the `jlpm run build` command generates the source maps for this exte
 jupyter lab build --minimize=False
 ```
 
+### Testing
+
+CI uses Python 3.12, Node.js 24, and JupyterLab 4.4. Use JupyterLab's `jlpm`
+command so local installs use the same Yarn version as CI.
+
+```bash
+python -m pip install 'jupyterlab~=4.4.0'
+jlpm install --immutable
+jlpm run eslint:check
+python -m pip install '.[tests]'
+python -m pytest tests -q
+python -m jupyterlab.browser_check
+```
+
+The notebook integration test opens JupyterLab in Chromium, renders a Bokeh plot,
+checks Python updates in the browser, and uses a slider to check browser updates
+in the Python kernel. It loads BokehJS inline and starts an isolated JupyterLab
+server with a temporary notebook and a real Python kernel.
+
+```bash
+python -m pip install '.[tests,browser-tests]'
+python -m playwright install --with-deps chromium
+python -m pytest browser_tests -q
+```
+
 ### Uninstall
 
 ```bash
