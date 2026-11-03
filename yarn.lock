@@ -33,7 +33,7 @@ __metadata:
     npm-run-all: ^4.1.5
     rimraf: ^4.4.1
     source-map-loader: ^5.0.0
-    style-loader: ^2.0.0
+    style-loader: ^4.0.0
     typescript: ~5.0.2
     webpack: ^5.75.0
     webpack-cli: ^4.10.0
@@ -6487,15 +6487,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"style-loader@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "style-loader@npm:2.0.0"
-  dependencies:
-    loader-utils: ^2.0.0
-    schema-utils: ^3.0.0
+"style-loader@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "style-loader@npm:4.0.0"
   peerDependencies:
-    webpack: ^4.0.0 || ^5.0.0
-  checksum: 21425246a5a8f14d1625a657a3a56f8a323193fa341a71af818a2ed2a429efa2385a328b4381cf2f12c2d0e6380801eb9e0427ed9c3a10ff95c86e383184d632
+    webpack: ^5.27.0
+  checksum: 0b751b4cc8394a2fe1df6194bb2f6dd68e859e36f22030994bb7b5220f24f9efb5705e78b2442226e6fa4c90f74b397529c7eb0a1d7326fb016e1e140e90151c
   languageName: node
   linkType: hard
 
