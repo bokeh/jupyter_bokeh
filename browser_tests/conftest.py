@@ -65,6 +65,7 @@ display(widget)
                         with urlopen(url, timeout=1):
                             break
                     except (URLError, TimeoutError):
+                        # Server info can appear before HTTP is ready. Retry until the deadline.
                         pass
                 assert server.poll() is None, log_path.read_text()
                 time.sleep(0.1)
