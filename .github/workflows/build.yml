@@ -2,53 +2,40 @@ name: Build
 
 on:
   push:
-    branches: main
+    branches: [main]
   pull_request:
-    branches: '*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: Install node
-      uses: actions/setup-node@v3
-      with:
-       node-version: '18.x'
-    - name: Install Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.8'
-        architecture: 'x64'
-    - name: Setup pip cache
-      uses: actions/cache@v3
-      with:
-        path: ~/.cache/pip
-        key: pip-3.8-${{ hashFiles('package.json') }}
-        restore-keys: |
-          pip-3.8-
-          pip-
-
-    - name: Get yarn cache directory path
-      id: yarn-cache-dir-path
-      run: echo "::set-output name=dir::$(yarn cache dir)"
-    - name: Setup yarn cache
-      uses: actions/cache@v3
-      id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
-      with:
-        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-        key: yarn-${{ hashFiles('**/yarn.lock') }}
-        restore-keys: |
-          yarn-
-
-    - name: Install dependencies
-      run: python -m pip install -U jupyterlab~=4.0 jupyter_packaging~=0.12.3
-    - name: Build the extension
-      run: |
-        jlpm
-        jlpm run eslint:check
-        python -m pip install .
-
-        jupyter labextension list 2>&1 | grep -ie "@bokeh/jupyter_bokeh.*OK"
-        python -m jupyterlab.browser_check
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+      - name: Install Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install build dependencies
+        run: python -m pip install 'jupyterlab~=4.4.0'
+      - name: Install JavaScript dependencies
+        run: jlpm install --immutable
+      - name: Check JavaScript formatting
+        run: jlpm run eslint:check
+      - name: Build and install the extension
+        run: python -m pip install '.[tests]'
+      - name: Run Python tests
+        run: python -m pytest tests -q
+      - name: Check extension registration
+        run: jupyter labextension list 2>&1 | grep -ie '@bokeh/jupyter_bokeh.*OK'
+      - name: Check JupyterLab in the browser
+        run: python -m jupyterlab.browser_check

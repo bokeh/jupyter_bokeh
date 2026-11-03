@@ -96,6 +96,20 @@ By default, the `jlpm run build` command generates the source maps for this exte
 jupyter lab build --minimize=False
 ```
 
+### Testing
+
+CI uses Python 3.12, Node.js 24, and JupyterLab 4.4. Use JupyterLab's `jlpm`
+command so local installs use the same Yarn version as CI.
+
+```bash
+python -m pip install 'jupyterlab~=4.4.0'
+jlpm install --immutable
+jlpm run eslint:check
+python -m pip install '.[tests]'
+python -m pytest tests -q
+python -m jupyterlab.browser_check
+```
+
 ### Uninstall
 
 ```bash
