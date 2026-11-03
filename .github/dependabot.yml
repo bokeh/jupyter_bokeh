@@ -5,16 +5,19 @@ updates:
     schedule:
       interval: weekly
     groups:
-      github-actions:
+      github-actions-minor-patch:
         patterns: ['*']
+        update-types: [minor, patch]
   - package-ecosystem: npm
     directory: /
     schedule:
       interval: weekly
     groups:
-      npm:
+      npm-minor-patch:
         patterns: ['*']
+        update-types: [minor, patch]
         applies-to: version-updates
       npm-security:
         patterns: ['*']
+        update-types: [minor, patch]
         applies-to: security-updates
