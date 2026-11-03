@@ -31,7 +31,10 @@ plot = figure(width=400, height=300, title="Initial title", output_backend="svg"
 plot.line("x", "y", source=source, line_width=4)
 slider = Slider(start=1, end=10, value=1, step=1, title="Multiplier", name="test-slider")
 
+callback_values = []
+
 def update(attr, old, new):
+    callback_values.append((old, new))
     source.data = dict(x=[1, 2, 3], y=[new, 2*new, 3*new])
     plot.title.text = f"Multiplier: {new}"
 
