@@ -110,6 +110,17 @@ python -m pytest tests -q
 python -m jupyterlab.browser_check
 ```
 
+The notebook integration test opens JupyterLab in Chromium, renders a Bokeh plot,
+checks Python updates in the browser, and uses a slider to check browser updates
+in the Python kernel. It loads BokehJS inline and starts an isolated JupyterLab
+server with a temporary notebook and a real Python kernel.
+
+```bash
+python -m pip install '.[tests,browser-tests]'
+python -m playwright install --with-deps chromium
+python -m pytest browser_tests -q
+```
+
 ### Uninstall
 
 ```bash

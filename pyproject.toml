@@ -36,6 +36,7 @@ dynamic = ["version", "description", "authors", "urls", "keywords"]
 
 [project.optional-dependencies]
 tests = ['flake8', 'pytest']
+browser-tests = ['pytest', 'playwright>=1.49,<2']
 build = [
     'setuptools>=40.8.0',
     'jupyterlab ~=4.0',
