@@ -1,3 +1,6 @@
+import pytest
+
+from bokeh.layouts import column
 from bokeh.plotting import figure
 
 from jupyter_bokeh import BokehModel
@@ -40,3 +43,18 @@ def test_close_after_update_from_model_releases_previous_document():
     old_model.title.text = "old"
     new_model.title.text = "new"
     assert sent == []
+
+
+def test_failed_model_update_keeps_previous_model_and_document():
+    model = figure()
+    widget = BokehModel(model)
+    sent = _capture_sent(widget)
+    bundle = widget.render_bundle
+
+    with pytest.raises(RuntimeError, match="Models must be owned by only a single document"):
+        widget.update_from_model(column(model))
+
+    assert widget._model is model
+    assert widget.render_bundle is bundle
+    model.title.text = "Still synchronized"
+    assert any("Still synchronized" in message.get("payload", "") for message in sent)

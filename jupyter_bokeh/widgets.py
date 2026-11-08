@@ -110,9 +110,10 @@ class BokehModel(DOMWidget):
         return render_bundle
 
     def update_from_model(self, model: Model) -> None:
+        render_bundle = self._model_to_traits(model)
         self._unregister_document()
         self._model = model
-        self.render_bundle = self._model_to_traits(model)
+        self.render_bundle = render_bundle
         self._registered_document = self._document
         self._registered_document.on_change_dispatch_to(self)
 
