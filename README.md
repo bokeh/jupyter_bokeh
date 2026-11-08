@@ -129,8 +129,9 @@ pip uninstall jupyter_bokeh
 
 ## Releasing to PyPI
 
-1. Push a new bare version tag, such as `4.1.1`, on the commit you want to
-   release from `main`. The release workflow takes the package version from the tag.
+1. Tag the commit you want to release from `main` and push the tag. Use
+   `4.1.1` for a stable release or `4.2.0-dev.1` for a development release.
+   PyPI displays the development version as `4.2.0.dev1`.
 2. After the build passes, open the GitHub Actions run and select
    **Review deployments** to approve publishing to PyPI.
 
