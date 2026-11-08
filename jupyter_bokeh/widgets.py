@@ -147,9 +147,6 @@ class BokehModel(DOMWidget):
             new = descriptor.property.prepare_value(model, descriptor.name, new)
             old = descriptor._get(model)
             descriptor._set(model, old, new, setter=setter)
-
-            for cb in model._callbacks.get(attr, []):
-                cb(attr, old, new)
         elif kind == "ColumnsStreamed":
             model = event["model"]
             data = event["data"]
