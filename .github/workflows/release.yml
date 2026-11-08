@@ -1,0 +1,87 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.repository == 'bokeh/jupyter_bokeh'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+      - name: Install Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install build dependencies
+        run: python -m pip install build twine 'jupyterlab~=4.4.0'
+      - name: Install JavaScript dependencies
+        run: jlpm install --immutable
+      - name: Build distributions
+        run: python -m build
+      - name: Check distributions
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          from packaging.utils import parse_sdist_filename, parse_wheel_filename
+          from packaging.version import Version
+
+          expected = Version(os.environ["RELEASE_TAG"])
+          wheel, = Path("dist").glob("*.whl")
+          sdist, = Path("dist").glob("*.tar.gz")
+          wheel_name, wheel_version, _, _ = parse_wheel_filename(wheel.name)
+          sdist_name, sdist_version = parse_sdist_filename(sdist.name)
+          assert wheel_name == sdist_name == "jupyter-bokeh"
+          assert wheel_version == sdist_version == expected, (wheel_version, sdist_version, expected)
+          PY
+          python -m twine check --strict dist/*.whl dist/*.tar.gz
+      - name: Check installed wheel
+        run: |
+          python -m pip install dist/*.whl
+          jupyter labextension list 2>&1 | grep -ie '@bokeh/jupyter_bokeh.*OK'
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: pypi-distributions
+          path: |
+            dist/*.whl
+            dist/*.tar.gz
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    runs-on: ubuntu-24.04
+    environment:
+      name: pypi
+      url: https://pypi.org/project/jupyter-bokeh/
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: pypi-distributions
+          path: dist/
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
