@@ -79,7 +79,7 @@ export class BokehModel extends DOMWidgetModel {
 
 export class BokehView extends DOMWidgetView {
   private _document: Document | null
-  private _receiver: Receiver
+  private _receiver: Receiver | null = null
   private _blocked: boolean
   private _msgs: any[]
   private _pending_events: any[]
@@ -94,8 +94,6 @@ export class BokehView extends DOMWidgetView {
     this._combine = true
     this._msgs = []
     this._pending_events = []
-    const { Receiver } = bk_require('protocol/receiver')
-    this._receiver = new Receiver()
     this.model.on('change:render_bundle', () => this.render())
 
     let canDetectIdle = false
@@ -144,7 +142,22 @@ export class BokehView extends DOMWidgetView {
     this.send(this._msgs.shift())
   }
 
-  render(): void {
+  async render(): Promise<void> {
+    const root = window as any
+    const deadline = performance.now() + 10000
+    // Voilà can create the widget before BokehJS and its extensions finish loading.
+    while (typeof root.Bokeh?.require !== 'function' || root._bokeh_is_loading > 0) {
+      if (performance.now() >= deadline) {
+        throw new Error('BokehJS did not finish loading within 10 seconds.')
+      }
+      await new Promise(resolve => setTimeout(resolve, 25))
+    }
+
+    if (this._receiver === null) {
+      const { Receiver } = bk_require('protocol/receiver')
+      this._receiver = new Receiver()
+    }
+
     if (this._document !== null) {
       this._document.clear()
     }
@@ -222,7 +235,7 @@ export class BokehView extends DOMWidgetView {
     content: { msg: 'patch'; payload?: Fragment },
     buffers: DataView[]
   ): void {
-    if (this._document === null) {
+    if (this._document === null || this._receiver === null) {
       return
     }
     if (content.msg === 'patch') {

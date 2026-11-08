@@ -17,14 +17,15 @@ def notebook_page(tmp_path):
     notebook = nbformat.v4.new_notebook(
         cells=[nbformat.v4.new_code_cell('''\
 from bokeh.io import output_notebook
+from bokeh.resources import INLINE
+
+output_notebook(resources=INLINE)
+'''), nbformat.v4.new_code_cell('''\
 from bokeh.layouts import column
 from bokeh.models import ColumnDataSource, Slider
 from bokeh.plotting import figure
-from bokeh.resources import INLINE
 from IPython.display import display
 from jupyter_bokeh import BokehModel
-
-output_notebook(resources=INLINE)
 
 source = ColumnDataSource(data=dict(x=[1, 2, 3], y=[1, 2, 3]), name="test-source")
 plot = figure(width=400, height=300, title="Initial title", output_backend="svg", name="test-plot")
