@@ -126,3 +126,12 @@ python -m pytest browser_tests -q
 ```bash
 pip uninstall jupyter_bokeh
 ```
+
+## Releasing to PyPI
+
+1. Push a new bare version tag, such as `4.1.1`, on the commit you want to
+   release from `main`. The release workflow takes the package version from the tag.
+2. After the build passes, open the GitHub Actions run and select
+   **Review deployments** to approve publishing to PyPI.
+
+See the [release guide](DEVGUIDE.md) for details.
