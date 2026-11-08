@@ -43,3 +43,36 @@ def test_notebook_plot_sync(notebook_page):
     expect(plot.get_by_text('Multiplier: 2', exact=True).first).to_be_visible()
     execute(page, 'assert slider.value == 2\nassert source.data["y"] == [2, 4, 6]\nassert callback_values == [(1, 2)]')
     page.wait_for_function(f"JSON.stringify(({DOCUMENT}).get_model_by_name('test-source').data.y) === '[2,4,6]'")
+
+
+def test_widget_waits_for_bokeh_resources(notebook_page):
+    page = notebook_page
+    run_cell = "window.jupyterapp.commands.execute('notebook:run-cell')"
+    page.evaluate(run_cell)
+    page.wait_for_function("typeof window.Bokeh?.require === 'function'")
+
+    page.evaluate("""() => {
+        window.jupyterapp.shell.currentWidget.content.activeCellIndex = 1
+        window.savedBokeh = window.Bokeh
+        window.Bokeh = undefined
+        Object.defineProperty(window, '_bokeh_is_loading', {
+            configurable: true,
+            get() {
+                window.bokehLoadingChecked = true
+                return 1
+            },
+        })
+    }""")
+    # Launch the widget render while BokehJS is unavailable.
+    page.evaluate(f"void {run_cell}")
+    output = page.locator('.jp-CodeCell').nth(1)
+    page.wait_for_function("window.jupyterapp.shell.currentWidget.content.widgets[1].outputArea.model.length > 0")
+    page.evaluate("window.Bokeh = window.savedBokeh")
+    page.wait_for_function("window.bokehLoadingChecked === true")
+    plot = output.locator('.bk-Figure')
+    expect(plot).not_to_be_visible()
+    page.evaluate("Object.defineProperty(window, '_bokeh_is_loading', {value: 0, writable: true})")
+
+    expect(plot).to_be_visible()
+    execute(page, 'plot.title.text = "Updated after loading"')
+    expect(plot.get_by_text('Updated after loading', exact=True).first).to_be_visible()
