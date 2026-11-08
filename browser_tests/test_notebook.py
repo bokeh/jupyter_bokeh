@@ -52,7 +52,14 @@ def test_widget_waits_for_bokeh_resources(notebook_page):
     page.wait_for_function("typeof window.Bokeh?.require === 'function'")
 
     page.evaluate("""() => {
-        window.jupyterapp.shell.currentWidget.content.activeCellIndex = 1
+        const notebook = window.jupyterapp.shell.currentWidget
+        notebook.content.activeCellIndex = 1
+        notebook.sessionContext.session.kernel.iopubMessage.connect((_, message) => {
+            if (message.header.msg_type === 'comm_msg' &&
+                JSON.stringify(message.content.data).includes('Updated during loading')) {
+                window.startupPatchReceived = true
+            }
+        })
         window.savedBokeh = window.Bokeh
         window.Bokeh = undefined
         Object.defineProperty(window, '_bokeh_is_loading', {
@@ -71,8 +78,16 @@ def test_widget_waits_for_bokeh_resources(notebook_page):
     page.wait_for_function("window.bokehLoadingChecked === true")
     plot = output.locator('.bk-Figure')
     expect(plot).not_to_be_visible()
+    execute(page, """
+import numpy as np
+source.data = dict(x=[1, 2, 3], y=np.array([3, 2, 1], dtype="float64"))
+source.stream(dict(x=[4], y=[4]))
+plot.title.text = "Updated during loading"
+""")
+    page.wait_for_function("window.startupPatchReceived === true")
     page.evaluate("Object.defineProperty(window, '_bokeh_is_loading', {value: 0, writable: true})")
 
-    expect(plot).to_be_visible()
+    expect(plot.get_by_text('Updated during loading', exact=True).first).to_be_visible()
+    page.wait_for_function(f"Array.from(({DOCUMENT}).get_model_by_name('test-source').data.y).join() === '3,2,1,4'")
     execute(page, 'plot.title.text = "Updated after loading"')
     expect(plot.get_by_text('Updated after loading', exact=True).first).to_be_visible()
