@@ -80,6 +80,7 @@ export class BokehModel extends DOMWidgetModel {
 export class BokehView extends DOMWidgetView {
   private _document: Document | null
   private _receiver: Receiver | null = null
+  private _pending_patches: Fragment[] | null = []
   private _blocked: boolean
   private _msgs: any[]
   private _pending_events: any[]
@@ -94,7 +95,12 @@ export class BokehView extends DOMWidgetView {
     this._combine = true
     this._msgs = []
     this._pending_events = []
-    this.model.on('change:render_bundle', () => this.render())
+    this.listenTo(this.model, 'change:render_bundle', () => {
+      // The new bundle already includes changes to the previous snapshot.
+      this._pending_patches = []
+      this._receiver = null
+      return this.render()
+    })
 
     let canDetectIdle = false
     if (
@@ -143,14 +149,23 @@ export class BokehView extends DOMWidgetView {
   }
 
   async render(): Promise<void> {
+    const pending_patches = this._pending_patches ??= []
     const root = window as any
     const deadline = performance.now() + 10000
     // Voilà can create the widget before BokehJS and its extensions finish loading.
     while (typeof root.Bokeh?.require !== 'function' || root._bokeh_is_loading > 0) {
+      if (this._pending_patches !== pending_patches) {
+        return
+      }
       if (performance.now() >= deadline) {
+        this._pending_patches = null
         throw new Error('BokehJS did not finish loading within 10 seconds.')
       }
       await new Promise(resolve => setTimeout(resolve, 25))
+    }
+
+    if (this._pending_patches !== pending_patches) {
+      return
     }
 
     if (this._receiver === null) {
@@ -177,6 +192,10 @@ export class BokehView extends DOMWidgetView {
       add_document_standalone(this._document, element, roots)
     }
     this._document.on_change((event: any) => this._change_event(event))
+    this._pending_patches = null
+    for (const fragment of pending_patches) {
+      this._receive_patch(fragment)
+    }
   }
 
   private _combine_events(
@@ -235,24 +254,31 @@ export class BokehView extends DOMWidgetView {
     content: { msg: 'patch'; payload?: Fragment },
     buffers: DataView[]
   ): void {
-    if (this._document === null || this._receiver === null) {
+    if (content.msg !== 'patch') {
       return
     }
-    if (content.msg === 'patch') {
-      const { payload } = content
-      this._receiver.consume(payload != null ? payload : buffers[0].buffer)
-      const comm_msg = this._receiver.message
-      if (comm_msg != null && keys(comm_msg.content).length > 0) {
-        this._blocked = true
-        try {
-          this._document.apply_json_patch(comm_msg.content, comm_msg.buffers)
-        } finally {
-          this._blocked = false
-          const events = [...this._pending_events]
-          this._pending_events = []
-          for (const event of events) {
-            this._change_event(event)
-          }
+    const { payload } = content
+    const fragment = payload != null ? payload : buffers[0].buffer
+    if (this._pending_patches !== null) {
+      this._pending_patches.push(fragment)
+    } else if (this._document !== null && this._receiver !== null) {
+      this._receive_patch(fragment)
+    }
+  }
+
+  private _receive_patch(fragment: Fragment): void {
+    this._receiver.consume(fragment)
+    const comm_msg = this._receiver.message
+    if (comm_msg != null && keys(comm_msg.content).length > 0) {
+      this._blocked = true
+      try {
+        this._document.apply_json_patch(comm_msg.content, comm_msg.buffers)
+      } finally {
+        this._blocked = false
+        const events = [...this._pending_events]
+        this._pending_events = []
+        for (const event of events) {
+          this._change_event(event)
         }
       }
     }
