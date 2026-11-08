@@ -75,6 +75,7 @@ class BokehModel(DOMWidget):
     render_bundle = Dict().tag(sync=True, to_json=lambda obj, _: serialize_json(obj))
 
     _model: Model
+    _registered_document: Document | None = None
 
     @property
     def _document(self) -> Document | None:
@@ -88,8 +89,12 @@ class BokehModel(DOMWidget):
 
     def close(self) -> None:
         super().close()
-        if self._document is not None:
-            self._document.remove_on_change(self)
+        self._unregister_document()
+
+    def _unregister_document(self) -> None:
+        if self._registered_document is not None:
+            self._registered_document.remove_on_change(self)
+            self._registered_document = None
 
     @classmethod
     def _model_to_traits(cls, model: Model) -> RenderBundle:
@@ -105,9 +110,11 @@ class BokehModel(DOMWidget):
         return render_bundle
 
     def update_from_model(self, model: Model) -> None:
+        self._unregister_document()
         self._model = model
         self.render_bundle = self._model_to_traits(model)
-        self._document.on_change_dispatch_to(self)
+        self._registered_document = self._document
+        self._registered_document.on_change_dispatch_to(self)
 
     def _document_patched(self, event: DocumentPatchedEvent) -> None:
         if event.setter is self:
