@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - "[0-9]+.[0-9]+.[0-9]+"
+      - "[0-9]+.[0-9]+.[0-9]+-dev.[0-9]+"
 
 permissions:
   contents: read
@@ -26,6 +27,10 @@ jobs:
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '24'
+      - name: Set package version from release tag
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: npm version "$RELEASE_TAG" --no-git-tag-version --ignore-scripts --allow-same-version
       - name: Install Python
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:

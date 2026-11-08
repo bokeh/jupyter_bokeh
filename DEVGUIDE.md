@@ -1,8 +1,10 @@
 # Release process
 
-## Update package version
+To publish to PyPI, tag the commit you want to release from `main` and
+push the tag. Use `X.Y.Z` for stable releases and `X.Y.Z-dev.N` for
+development releases. The release workflow sets `package.json` to the
+tag in its build checkout and verifies that both distributions match
+the Python version. For example, `4.2.0-dev.1` builds as `4.2.0.dev1`.
 
-| File                        | Entry             | Content        |
-| --------------------------- | ----------------- | -------------- |
-| `package.json`              | `version`         | `3.0.3-dev.2`  |
-| `package-lock.json`         | `version`         | `3.0.3-dev.2`  |
+After the build passes, open the GitHub Actions run and select
+**Review deployments** to approve publishing to the `pypi` environment.
